@@ -1,95 +1,138 @@
 <!DOCTYPE html>
 <html lang="th">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width-scale=1.0">
-        <title>ข้อมูลผลงานในการตีพิมพ์ปี พ.ศ. 2560 - 2568</title>
-        <link rel="stylesheet" href="style.css">
-    </head>
-    <body>
-        <h1>ข้อมูลผลงานในการตีพิมพ์ปี พ.ศ. 2560 - 2568</h1>
-        <div class="search-data">
-            <fieldset>
-                <!-- EX >> <label for="name" id="name-label">Name: <input placeholder="UR dog name..." id="name" name:"name" required /></label> -->
-                <fieldset>
-                    <label>ข้อมูลปี</label>
-                    <label>ประเภท:
-                        <select id="dropdown">
-                            <option value="">ปีการศึกษา</option>
-                            <option value="1">ปีงบประมาณ</option>
-                            <option value="2">ปีปฏิทิน</option>
-                        </select>
-                    </label>
-                    <label>ปี:
-                        <select id="dropdown">
-                            <option value="">ทั้งหมด</option>
-                            <option value="1">2560</option>
-                            <option value="2">2561</option>
-                            <option value="3">2562</option>
-                            <option value="4">2563</option>
-                            <option value="5">2564</option>
-                            <option value="6">2565</option>
-                            <option value="7">2566</option>
-                            <option value="8">2567</option>
-                            <option value="9">2568</option>
-                        </select>
-                    </label>
-                </fieldset>
-                <fieldset>
-                    <label>สังกัดภาควิชา:
-                        <select id="dropdown">
-                            <option value="">ทั้งหมด</option>
-                            <option value="1">2560</option>
-                            <option value="2">2561</option>
-                            <option value="3">2562</option>
-                            <option value="4">2563</option>
-                            <option value="5">2564</option>
-                            <option value="6">2565</option>
-                            <option value="7">2566</option>
-                            <option value="8">2567</option>
-                            <option value="9">2568</option>
-                        </select>
-                    </label>
-                    <label>ระดับผลงาน:
-                        <input list="years" value="ทั้งหมด">
-                        <datalist id="years">
-                            <option value="ทั้งหมด">
-                            <option value="วารสารระดับชาติ TCI กลุ่ม 1">
-                            <option value="2561">
-                            <option value="2562">
-                            <option value="2563">
-                            <option value="2564">
-                            <option value="2565">
-                            <option value="2566">
-                            <option value="2567">
-                            <option value="2568">
-                        </datalist>
-                    </label>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ข้อมูลผลงานในการตีพิมพ์ปี พ.ศ. 2560 - 2568</title>
+    <link rel="stylesheet" href="style.css">
+    
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    
+    <!-- SheetJS for Excel Export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.0/package/dist/xlsx.full.min.js"></script>
+</head>
+<body>
+    <div class="container">
 
-                    <label>ผู้สร้างสรรค์ผลงาน:
-                        <select id="dropdown">
-                            <option value="">All</option>
-                            <option value="1">2560</option>
-                            <option value="2">2561</option>
-                            <option value="3">2562</option>
-                            <option value="4">2563</option>
-                            <option value="5">2564</option>
-                            <option value="6">2565</option>
-                            <option value="7">2566</option>
-                            <option value="8">2567</option>
-                            <option value="9">2568</option>
+        <!-- Header -->
+        <header class="header">
+            <div class="logo">
+                <img src="https://www.nu.ac.th/wp-content/uploads/2023/07/NULOGO-Download.png" alt="Naresuan University">
+            </div>
+            <h1>ข้อมูลผลงานในการตีพิมพ์ พ.ศ. 2560 - 2568</h1>
+        </header>
+
+        <!-- Filter Section -->
+        <section class="card filter-card">
+            <div class="filters">
+                <!-- Row 1: ประเภท + ปี -->
+                <div class="filter-row">
+                    <div class="col">
+                        <label for="typeFilter">ประเภทของปี</label>
+                        <select id="typeFilter">
+                            <option value="">ปีการศึกษา</option>
+                            <option value="budget">ปีงบประมาณ</option>
+                            <option value="calendar">ปีปฏิทิน</option>
                         </select>
-                    </label>
-                </fieldset>
-                <label for="name" id="name-label">ชื่อผลงาน(ภาษาไทย/English): <input type="text" id="name" placeholder="ค้นหาข้อมูล"></label>
-            </fieldset>
-        </div>
-        <div class="table-container">
-            <table id="dataTable">
-                <thead id="tableHead"></thead>
-                <thead id="tableBody"></thead>
-            </table>
-        </div>
-        <script src="scripts.js"></script>
-    </body>
+                    </div>
+                    <div class="col">
+                        <label for="yearFilter">ปี</label>
+                        <select id="yearFilter">
+                            <option value="">ทั้งหมด</option>
+                            <option value="2560">2560</option>
+                            <option value="2561">2561</option>
+                            <option value="2562">2562</option>
+                            <option value="2563">2563</option>
+                            <option value="2564">2564</option>
+                            <option value="2565">2565</option>
+                            <option value="2566">2566</option>
+                            <option value="2567">2567</option>
+                            <option value="2568">2568</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Row 2: เจ้าของผลงาน + สังกัดภาควิชา -->
+                <div class="filter-row">
+                    <div class="col">
+                        <label for="authorFilter">เจ้าของผลงาน</label>
+                        <input type="text" id="authorFilter" list="authorList" placeholder="พิมพ์ชื่อผู้สร้างสรรค์">
+                        <datalist id="authorList"></datalist>
+                    </div>
+                    <div class="col">
+                        <label for="deptFilter">สังกัดภาควิชา</label>
+                        <select id="deptFilter">
+                            <option value="">ทั้งหมด</option> 
+                            <option>ภาษาศาสตร์คติชนวิทยาปรัชญาและศาสนา</option> 
+                            <option>ภาษาตะวันตก</option>
+                            <option>ดนตรี</option> 
+                            <option>ผู้ตีพิมพ์มาจากหลายภาควิชา</option> 
+                            <option>ภาษาตะวันออก</option> 
+                            <option>ภาษาไทย</option> 
+                            <option>ภาษาอังกฤษ</option> 
+                            <option>สำนักงานเลขานุการคณะ</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Row 3: ชื่อผลงาน + ระดับผลงาน -->
+                <div class="filter-row">
+                    <div class="col">
+                        <label for="keyword">ค้นหาชื่อผลงาน</label>
+                        <input type="text" id="keyword" placeholder="พิมพ์ชื่อผลงาน (ไทย/อังกฤษ)">
+                    </div>
+                    <div class="col">
+                        <label for="rankFilter">ระดับผลงาน</label>
+                        <select id="rankFilter">
+                            <option value="">ทั้งหมด</option>
+                            <option>วารสารระดับชาติ TCI กลุ่ม 1</option>
+                            <option>วารสารระดับชาติ TCI กลุ่ม 2</option>
+                            <option>Proceedings ระดับนานาชาติ</option> 
+                            <option>วารสารระดับชาติ Q1</option> 
+                            <option>วารสารระดับชาติ Q2</option> 
+                            <option>วารสารระดับชาติ Q3</option> 
+                            <option>วารสารระดับชาติ Q4</option> 
+                            <option>วารสารระดับชาติไม่อยู่ในฐาน</option> 
+                            <option>วารสารระดับชาติไม่อยู่ในฐาน TCI ไม่มีกลุ่ม เทียบคำ Proceedings</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <div class="controls-row">
+                <button class="btn search">ค้นหา</button>
+                <button class="btn reset">ล้างข้อมูล</button>
+                <button class="btn excel">Export Excel</button>
+                <div class="result-count">ผลลัพธ์: <span id="count">0</span> แถว</div>
+            </div>
+        </section>
+
+        <!-- Table Section -->
+        <section class="card table-card">
+            <div class="table-wrap">
+                <table id="dataTable">
+                    <thead>
+                        <tr>
+                            <th>ปี</th>
+                            <th>เจ้าของผลงาน</th>
+                            <th>สังกัดภาควิชา</th>
+                            <th>ชื่อผลงาน</th>
+                            <th>อ้างอิง</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td colspan="5" class="small">กำลังโหลดข้อมูล...</td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </section>
+
+    </div>
+
+    <!-- JavaScript -->
+    <script src="script.js"></script>
+</body>
 </html>

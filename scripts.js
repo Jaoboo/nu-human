@@ -1,15 +1,182 @@
-<script>
-  const input = document.getElementById('yearInput');
+// ข้อมูลทั้งหมด
+let allData = [];
+let filteredData = [];
 
-  input.addEventListener('focus', function() {
-    if (this.value === 'ทั้งหมด') {
-      this.value = ''; // ล้างค่าเมื่อคลิกหรือเริ่มพิมพ์
-    }
-  });
+// Google Sheets URL
+const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT2KK5zhWgJf9t21MO2qxykVWctw0sfJ8M7SwERKm0Nb7hxamhqfLEsa5vhqz5XHg/pub?gid=1841845518&single=true&output=csv';
 
-  input.addEventListener('blur', function() {
-    if (this.value.trim() === '') {
-      this.value = 'ทั้งหมด'; // ถ้าไม่ได้พิมพ์อะไร กลับไปเป็นค่าเริ่มต้น
+// เริ่มต้นเมื่อโหลดหน้าเสร็จ
+$(document).ready(function() {
+    // โหลดข้อมูลจาก Google Sheets
+    loadDataFromGoogleSheets();
+
+    // เพิ่ม Event Listeners
+    $('.btn.search').click(filterData);
+    $('.btn.excel').click(exportToExcel);
+    $('.btn.reset').click(resetForm);
+    
+    // ค้นหาแบบ Real-time เมื่อพิมพ์
+    $('#keyword, #authorFilter').on('input', filterData);
+    $('#typeFilter, #yearFilter, #deptFilter, #rankFilter').on('change', filterData);
+});
+
+// ฟังก์ชันโหลดข้อมูลจาก Google Sheets
+function loadDataFromGoogleSheets() {
+    $('#dataTable tbody').html('<tr><td colspan="5" class="loading">กำลังโหลดข้อมูล...</td></tr>');
+
+    fetch(SHEET_URL)
+        .then(response => {
+            if (!response.ok) {
+                throw new Error('ไม่สามารถเข้าถึง Google Sheets');
+            }
+            return response.text();
+        })
+        .then(csvData => {
+            allData = parseCSV(csvData);
+            filteredData = [...allData];
+            populateAuthorsDatalist();
+            displayData(filteredData);
+            updateCount();
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            $('#dataTable tbody').html(`
+                <tr>
+                    <td colspan="5" class="no-data">
+                        ⚠️ ไม่สามารถโหลดข้อมูลได้<br>
+                        <small>กรุณาตรวจสอบว่า Google Sheets ถูกแชร์เป็นสาธารณะแล้ว</small>
+                    </td>
+                </tr>
+            `);
+        });
+}
+
+// ฟังก์ชันแปลง CSV เป็น Array
+function parseCSV(csv) {
+    const lines = csv.split('\n');
+    const headers = lines[0].split(',').map(h => h.trim());
+    const data = [];
+
+    for (let i = 1; i < lines.length; i++) {
+        if (lines[i].trim() === '') continue;
+        
+        const values = lines[i].split(',');
+        const row = {};
+        
+        headers.forEach((header, index) => {
+            row[header] = values[index] ? values[index].trim() : '';
+        });
+        
+        data.push(row);
     }
-  });
-</script>
+
+    return data;
+}
+
+// ฟังก์ชันเติมข้อมูลใน Datalist ผู้สร้างสรรค์ (AutoComplete)
+function populateAuthorsDatalist() {
+    const authors = new Set();
+    
+    allData.forEach(row => {
+        // คอลัมน์เจ้าของผลงาน (index 1 = คอลัมน์ที่ 2)
+        const authorColumn = Object.keys(row)[1];
+        if (row[authorColumn] && row[authorColumn].trim() !== '') {
+            authors.add(row[authorColumn].trim());
+        }
+    });
+
+    const $datalist = $('#authorList');
+    $datalist.empty();
+    
+    // เรียงตามตัวอักษร และเพิ่มเข้า datalist
+    Array.from(authors).sort().forEach(author => {
+        $datalist.append(`<option value="${author}">`);
+    });
+}
+
+// ฟังก์ชันกรองข้อมูล
+function filterData() {
+    const yearType = $('#typeFilter').val();
+    const year = $('#yearFilter').val();
+    const dept = $('#deptFilter').val();
+    const rank = $('#rankFilter').val();
+    const author = $('#authorFilter').val().toLowerCase().trim();
+    const searchName = $('#keyword').val().toLowerCase().trim();
+
+    filteredData = allData.filter(row => {
+        const rowValues = Object.values(row).join(' ').toLowerCase();
+        
+        if (year && !rowValues.includes(year)) return false;
+        if (dept && !rowValues.includes(dept.toLowerCase())) return false;
+        if (rank && !rowValues.includes(rank.toLowerCase())) return false;
+        if (author && !rowValues.includes(author)) return false;
+        if (searchName && !rowValues.includes(searchName)) return false;
+        
+        return true;
+    });
+
+    displayData(filteredData);
+    updateCount();
+}
+
+// ฟังก์ชันแสดงข้อมูลในตาราง
+function displayData(data) {
+    const $tbody = $('#dataTable tbody');
+    $tbody.empty();
+
+    if (data.length === 0) {
+        $tbody.html('<tr><td colspan="5" class="no-data">ไม่พบข้อมูล</td></tr>');
+        return;
+    }
+
+    data.forEach((row) => {
+        const columns = Object.values(row);
+        const rowHTML = `
+            <tr>
+                <td>${columns[0] || '-'}</td>
+                <td>${columns[1] || '-'}</td>
+                <td>${columns[2] || '-'}</td>
+                <td>${columns[3] || '-'}</td>
+                <td>${columns[4] || '-'}</td>
+            </tr>
+        `;
+        $tbody.append(rowHTML);
+    });
+}
+
+// ฟังก์ชันอัพเดทจำนวนผลลัพธ์
+function updateCount() {
+    $('#count').text(filteredData.length);
+}
+
+// ฟังก์ชัน Export ไปยัง Excel
+function exportToExcel() {
+    if (filteredData.length === 0) {
+        alert('ไม่มีข้อมูลสำหรับ Export');
+        return;
+    }
+
+    const wb = XLSX.utils.book_new();
+    const headers = Object.keys(filteredData[0]);
+    const data = filteredData.map(row => Object.values(row));
+    const ws = XLSX.utils.aoa_to_sheet([headers, ...data]);
+    
+    XLSX.utils.book_append_sheet(wb, ws, 'ผลงานตีพิมพ์');
+    
+    const fileName = `ผลงานตีพิมพ์_${new Date().toLocaleDateString('th-TH')}.xlsx`;
+    XLSX.writeFile(wb, fileName);
+}
+
+// ฟังก์ชันรีเซ็ตฟอร์ม
+function resetForm() {
+    $('#typeFilter').val('');
+    $('#yearFilter').val('');
+    $('#deptFilter').val('');
+    $('#rankFilter').val('');
+    $('#authorFilter').val('');
+    $('#keyword').val('');
+    
+    filteredData = [...allData];
+    displayData(filteredData);
+    updateCount();
+}
