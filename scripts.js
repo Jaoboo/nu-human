@@ -2,111 +2,132 @@
 let allData = [];
 let filteredData = [];
 
-// Google Sheets URL
-const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT2KK5zhWgJf9t21MO2qxykVWctw0sfJ8M7SwERKm0Nb7hxamhqfLEsa5vhqz5XHg/pub?gid=1841845518&single=true&output=csv';
-
-// ข้อมูลทดสอบ (ลบออกเมื่อ Google Sheets ใช้งานได้แล้ว)
-const TEST_DATA = [
-    {
-        'ปี': '2567',
-        'เจ้าของผลงาน': 'สถิตาภรณ์ ศรีหิรัญ',
-        'สังกัดภาควิชา': 'ภาษาอังกฤษ',
-        'ชื่อผลงาน': 'การศึกษาภาษาอังกฤษเพื่อการสื่อสาร',
-        'อ้างอิง': 'วารสารมนุษยศาสตร์และสังคมศาสตร์ ปีที่ 15 ฉบับที่ 1'
-    },
-    {
-        'ปี': '2566',
-        'เจ้าของผลงาน': 'ดร.สมชาย ใจดี',
-        'สังกัดภาควิชา': 'ภาษาไทย',
-        'ชื่อผลงาน': 'วรรณกรรมไทยร่วมสมัย',
-        'อ้างอิง': 'วารสาร TCI กลุ่ม 1'
-    },
-    {
-        'ปี': '2566',
-        'เจ้าของผลงาน': 'ผศ.ดร.วิภา จันทร์งาม',
-        'สังกัดภาควิชา': 'ภาษาตะวันออก',
-        'ชื่อผลงาน': 'Chinese Language Teaching Methods',
-        'อ้างอิง': 'International Journal Q2'
-    }
-];
+// ข้อมูลจริง - ใส่ SHEET_ID ของ Google Sheets ตรงนี้
+const SHEET_ID = '1CJhSu3XwPTC35SxXzGnOwz8a8c_D_1eI';
+const SHEET_NAME = 'web app(อยู่ระหว่างการจัดทำ)';
 
 // เริ่มต้นเมื่อโหลดหน้าเสร็จ
 $(document).ready(function() {
-    // โหลดข้อมูลจาก Google Sheets
-    loadDataFromGoogleSheets();
-
-    // เพิ่ม Event Listeners
-    $('.btn.search').click(filterData);
-    $('.btn.excel').click(exportToExcel);
-    $('.btn.reset').click(resetForm);
+    console.log('🚀 Starting application...');
     
-    // ค้นหาแบบ Real-time เมื่อพิมพ์
-    $('#keyword, #authorFilter').on('input', filterData);
-    $('#typeFilter, #yearFilter, #deptFilter, #rankFilter').on('change', filterData);
+    // โหลดข้อมูลทันที
+    loadData();
+
+    // ปุ่ม Excel
+    $('.btn.excel').click(exportToExcel);
+    
+    // Dropdown: แสดงผลทันทีเมื่อเลือก
+    $('#typeFilter, #yearFilter, #deptFilter, #rankFilter').on('change', function() {
+        console.log('Dropdown changed:', $(this).attr('id'), '=', $(this).val());
+        filterData();
+    });
+    
+    // Input text: ค้นหาแบบ Real-time เมื่อพิมพ์
+    $('#keyword, #authorFilter').on('input', function() {
+        console.log('Input changed:', $(this).attr('id'), '=', $(this).val());
+        filterData();
+    });
 });
 
 // ฟังก์ชันโหลดข้อมูลจาก Google Sheets
-function loadDataFromGoogleSheets() {
-    $('#dataTable tbody').html('<tr><td colspan="5" class="loading">กำลังโหลดข้อมูล...</td></tr>');
-
-    // ลองใช้ข้อมูลทดสอบก่อน
-    console.log('Loading data...');
+function loadData() {
+    console.log('📥 Loading data from Google Sheets...');
+    console.log('SHEET_ID:', SHEET_ID);
+    console.log('SHEET_NAME:', SHEET_NAME);
     
-    fetch(SHEET_URL)
-        .then(response => {
-            if (!response.ok) {
-                throw new Error('ไม่สามารถเข้าถึง Google Sheets');
-            }
-            return response.text();
-        })
-        .then(csvData => {
-            console.log('CSV Data loaded:', csvData.substring(0, 200));
-            allData = parseCSV(csvData);
-            
-            // ถ้าไม่มีข้อมูลจาก Google Sheets ให้ใช้ TEST_DATA
-            if (allData.length === 0) {
-                console.log('No data from Google Sheets, using test data');
-                allData = TEST_DATA;
-            }
-            
-            filteredData = [...allData];
-            populateAuthorsDatalist();
-            displayData(filteredData);
-            updateCount();
-        })
-        .catch(error => {
-            console.error('Error loading from Google Sheets:', error);
-            console.log('Using test data instead');
-            
-            // ใช้ข้อมูลทดสอบแทน
-            allData = TEST_DATA;
-            filteredData = [...allData];
-            populateAuthorsDatalist();
-            displayData(filteredData);
-            updateCount();
-        });
-}
-
-// ฟังก์ชันแปลง CSV เป็น Array
-function parseCSV(csv) {
-    const lines = csv.split('\n');
-    const headers = lines[0].split(',').map(h => h.trim());
-    const data = [];
-
-    for (let i = 1; i < lines.length; i++) {
-        if (lines[i].trim() === '') continue;
-        
-        const values = lines[i].split(',');
-        const row = {};
-        
-        headers.forEach((header, index) => {
-            row[header] = values[index] ? values[index].trim() : '';
-        });
-        
-        data.push(row);
+    if (!SHEET_ID || SHEET_ID === '') {
+        alert('กรุณาใส่ SHEET_ID ในไฟล์ script.js');
+        $('#dataTable tbody').html('<tr><td colspan="6" class="no-data">กรุณาใส่ SHEET_ID</td></tr>');
+        return;
     }
-
-    return data;
+    
+    const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}`;
+    console.log('📍 Request URL:', url);
+    
+    // แสดง Loading
+    $('#dataTable tbody').html('<tr><td colspan="6" style="text-align:center; padding:20px;">⏳ กำลังโหลดข้อมูล...</td></tr>');
+    
+    $.ajax({
+        url: url,
+        dataType: 'text',
+        timeout: 10000,
+        success: function(response) {
+            console.log('✅ AJAX Success! Response length:', response.length);
+            console.log('First 100 chars:', response.substring(0, 100));
+            
+            try {
+                // ลบ prefix และ suffix ของ Google Sheets API
+                const jsonString = response.substring(47, response.length - 2);
+                const data = JSON.parse(jsonString);
+                
+                console.log('📊 Parsed data structure:', {
+                    cols: data.table.cols.length,
+                    rows: data.table.rows.length
+                });
+                
+                // แสดงชื่อคอลัมน์
+                const columnNames = data.table.cols.map(col => col.label || 'unnamed');
+                console.log('📋 Column names:', columnNames);
+                
+                // แปลงข้อมูลเป็น Array of Objects
+                allData = data.table.rows.map(row => {
+                    const obj = {};
+                    row.c.forEach((cell, index) => {
+                        const header = data.table.cols[index].label || `col${index}`;
+                        obj[header] = cell ? (cell.v || '') : '';
+                    });
+                    return obj;
+                });
+                
+                console.log('✅ Data loaded successfully:', allData.length, 'rows');
+                console.log('📄 First row sample:', allData[0]);
+                
+                // แสดงข้อมูลทั้งหมดทันทีโดยไม่ต้องรอเลือก filter
+                filteredData = [...allData];
+                populateAuthorsDatalist();
+                populateDropdownOptions(); // เพิ่มฟังก์ชันนี้
+                displayData(filteredData);
+                updateCount();
+                
+            } catch (error) {
+                console.error('❌ Error parsing data:', error);
+                console.error('Error stack:', error.stack);
+                alert('เกิดข้อผิดพลาดในการแปลงข้อมูล\n\n' + error.message);
+                $('#dataTable tbody').html('<tr><td colspan="6" class="no-data">เกิดข้อผิดพลาดในการแปลงข้อมูล<br>' + error.message + '</td></tr>');
+            }
+        },
+        error: function(xhr, status, error) {
+            console.error('❌ AJAX Error!');
+            console.error('Status:', status);
+            console.error('Error:', error);
+            console.error('XHR Status:', xhr.status);
+            console.error('XHR Response:', xhr.responseText);
+            
+            let errorMsg = '⚠️ ไม่สามารถโหลดข้อมูลได้\n\n';
+            errorMsg += 'กรุณาตรวจสอบ:\n';
+            errorMsg += '1. Google Sheets ต้องแชร์เป็น "Anyone with the link"\n';
+            errorMsg += '2. ชื่อ Sheet (แท็บ) ต้องถูกต้อง: "' + SHEET_NAME + '"\n';
+            errorMsg += '3. SHEET_ID ต้องถูกต้อง: ' + SHEET_ID + '\n\n';
+            errorMsg += 'รายละเอียดข้อผิดพลาด:\n';
+            errorMsg += 'Status: ' + status + '\n';
+            errorMsg += 'Error: ' + error;
+            
+            alert(errorMsg);
+            
+            $('#dataTable tbody').html(`
+                <tr><td colspan="6" class="no-data">
+                    ❌ ไม่สามารถโหลดข้อมูลได้<br><br>
+                    <strong>วิธีแก้ไข:</strong><br>
+                    1. เปิด Google Sheets<br>
+                    2. คลิก "Share" (แชร์) มุมขวาบน<br>
+                    3. เลือก "Anyone with the link"<br>
+                    4. สิทธิ์: "Viewer"<br>
+                    5. คลิก "Done"<br><br>
+                    <small>ตรวจสอบ Console (กด F12) สำหรับรายละเอียดเพิ่มเติม</small>
+                </td></tr>
+            `);
+        }
+    });
 }
 
 // ฟังก์ชันเติมข้อมูลใน Datalist ผู้สร้างสรรค์ (AutoComplete)
@@ -114,8 +135,10 @@ function populateAuthorsDatalist() {
     const authors = new Set();
     
     allData.forEach(row => {
-        // คอลัมน์เจ้าของผลงาน (index 1 = คอลัมน์ที่ 2)
-        const authorColumn = Object.keys(row)[1];
+        const keys = Object.keys(row);
+        
+        // คอลัมน์เจ้าของผลงาน (index 2)
+        const authorColumn = keys[2];
         if (row[authorColumn] && row[authorColumn].trim() !== '') {
             authors.add(row[authorColumn].trim());
         }
@@ -128,29 +151,85 @@ function populateAuthorsDatalist() {
     Array.from(authors).sort().forEach(author => {
         $datalist.append(`<option value="${author}">`);
     });
+    
+    console.log('👥 Authors loaded:', authors.size);
+}
+
+// ฟังก์ชันเติมข้อมูล Dropdown Options จากข้อมูลจริง
+function populateDropdownOptions() {
+    const years = new Set();
+    
+    allData.forEach(row => {
+        const columns = Object.values(row);
+        
+        // ปี (คอลัมน์ที่ 1)
+        if (columns[1] && columns[1].toString().trim() !== '') {
+            const year = columns[1].toString().trim();
+            // ดึงเฉพาะตัวเลขปี (กรณีมีข้อความอื่นปนมา)
+            const yearMatch = year.match(/\d{4}/);
+            if (yearMatch) {
+                years.add(yearMatch[0]);
+            }
+        }
+    });
+
+    // เติมข้อมูล ปี
+    const $yearFilter = $('#yearFilter');
+    $yearFilter.find('option:not(:first)').remove(); // เก็บ option "ทั้งหมด"
+    Array.from(years).sort((a, b) => a - b).forEach(year => {
+        $yearFilter.append(`<option value="${year}">${year}</option>`);
+    });
+    
+    console.log('📋 ปีที่มีในข้อมูล:', Array.from(years).sort());
 }
 
 // ฟังก์ชันกรองข้อมูล
 function filterData() {
-    const yearType = $('#typeFilter').val();
-    const year = $('#yearFilter').val();
-    const dept = $('#deptFilter').val();
-    const rank = $('#rankFilter').val();
+    const yearType = $('#typeFilter').val().trim();
+    const year = $('#yearFilter').val().trim();
+    const dept = $('#deptFilter').val().trim();
+    const rank = $('#rankFilter').val().trim();
     const author = $('#authorFilter').val().toLowerCase().trim();
     const searchName = $('#keyword').val().toLowerCase().trim();
 
+    console.log('🔍 Filtering with:', {yearType, year, dept, rank, author, searchName});
+
+    // ถ้าไม่มีการกรองเลย แสดงข้อมูลทั้งหมด
+    if (!yearType && !year && !dept && !rank && !author && !searchName) {
+        filteredData = [...allData];
+        displayData(filteredData);
+        updateCount();
+        return;
+    }
+
     filteredData = allData.filter(row => {
-        const rowValues = Object.values(row).join(' ').toLowerCase();
+        const columns = Object.values(row);
         
-        if (year && !rowValues.includes(year)) return false;
-        if (dept && !rowValues.includes(dept.toLowerCase())) return false;
-        if (rank && !rowValues.includes(rank.toLowerCase())) return false;
-        if (author && !rowValues.includes(author)) return false;
-        if (searchName && !rowValues.includes(searchName)) return false;
+        // ประเภทของปี (คอลัมน์ที่ 0)
+        if (yearType && !columns[0].toString().toLowerCase().includes(yearType.toLowerCase())) return false;
+        
+        // ปี (คอลัมน์ที่ 1)
+        if (year && !columns[1].toString().includes(year)) return false;
+        
+        // เจ้าของผลงาน (คอลัมน์ที่ 2)
+        if (author && !columns[2].toString().toLowerCase().includes(author)) return false;
+        
+        // สังกัดภาควิชา (คอลัมน์ที่ 3)
+        if (dept && !columns[3].toString().includes(dept)) return false;
+        
+        // ชื่อผลงาน (คอลัมน์ที่ 4)
+        if (searchName && !columns[4].toString().toLowerCase().includes(searchName)) return false;
+        
+        // ระดับผลงาน - ค้นหาในทุกคอลัมน์
+        if (rank) {
+            const allText = columns.join(' ');
+            if (!allText.includes(rank)) return false;
+        }
         
         return true;
     });
 
+    console.log('✅ Filtered results:', filteredData.length);
     displayData(filteredData);
     updateCount();
 }
@@ -161,12 +240,23 @@ function displayData(data) {
     $tbody.empty();
 
     if (data.length === 0) {
-        $tbody.html('<tr><td colspan="5" class="no-data">ไม่พบข้อมูล</td></tr>');
+        $tbody.html('<tr><td colspan="6" class="no-data">ไม่พบข้อมูล</td></tr>');
         return;
     }
 
-    data.forEach((row) => {
+    console.log('📊 Displaying', data.length, 'rows');
+
+    data.forEach((row, index) => {
         const columns = Object.values(row);
+        
+        // Debug: แสดงข้อมูล 3 แถวแรก
+        if (index < 3) {
+            console.log(`Row ${index}:`, columns);
+        }
+        
+        // คอลัมน์ที่ 6 คืออ้างอิง (index 5 หรือ 6 ขึ้นอยู่กับข้อมูล)
+        const reference = columns[5] || columns[6] || '-';
+        
         const rowHTML = `
             <tr>
                 <td>${columns[0] || '-'}</td>
@@ -174,6 +264,7 @@ function displayData(data) {
                 <td>${columns[2] || '-'}</td>
                 <td>${columns[3] || '-'}</td>
                 <td>${columns[4] || '-'}</td>
+                <td>${reference}</td>
             </tr>
         `;
         $tbody.append(rowHTML);
@@ -183,6 +274,7 @@ function displayData(data) {
 // ฟังก์ชันอัพเดทจำนวนผลลัพธ์
 function updateCount() {
     $('#count').text(filteredData.length);
+    console.log('📈 Count updated:', filteredData.length);
 }
 
 // ฟังก์ชัน Export ไปยัง Excel
@@ -191,6 +283,8 @@ function exportToExcel() {
         alert('ไม่มีข้อมูลสำหรับ Export');
         return;
     }
+
+    console.log('📤 Exporting', filteredData.length, 'rows to Excel');
 
     const wb = XLSX.utils.book_new();
     const headers = Object.keys(filteredData[0]);
@@ -201,18 +295,6 @@ function exportToExcel() {
     
     const fileName = `ผลงานตีพิมพ์_${new Date().toLocaleDateString('th-TH')}.xlsx`;
     XLSX.writeFile(wb, fileName);
-}
-
-// ฟังก์ชันรีเซ็ตฟอร์ม
-function resetForm() {
-    $('#typeFilter').val('');
-    $('#yearFilter').val('');
-    $('#deptFilter').val('');
-    $('#rankFilter').val('');
-    $('#authorFilter').val('');
-    $('#keyword').val('');
     
-    filteredData = [...allData];
-    displayData(filteredData);
-    updateCount();
+    console.log('✅ Excel file exported:', fileName);
 }

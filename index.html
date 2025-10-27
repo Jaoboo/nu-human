@@ -26,40 +26,28 @@
         <!-- Filter Section -->
         <section class="card filter-card">
             <div class="filters">
-                <!-- Row 1: ประเภท + ปี -->
+                <!-- Row 1: ประเภทของปี + ปี -->
                 <div class="filter-row">
                     <div class="col">
                         <label for="typeFilter">ประเภทของปี</label>
                         <select id="typeFilter">
-                            <option value="">ปีการศึกษา</option>
-                            <option value="budget">ปีงบประมาณ</option>
-                            <option value="calendar">ปีปฏิทิน</option>
+                            <option value="">ทั้งหมด</option>
+                            <option value="ปีการศึกษา">ปีการศึกษา</option>
+                            <option value="ปีงบประมาณ">ปีงบประมาณ</option>
+                            <option value="ปีปฏิทิน">ปีปฏิทิน</option>
                         </select>
                     </div>
                     <div class="col">
                         <label for="yearFilter">ปี</label>
                         <select id="yearFilter">
                             <option value="">ทั้งหมด</option>
-                            <option value="2560">2560</option>
-                            <option value="2561">2561</option>
-                            <option value="2562">2562</option>
-                            <option value="2563">2563</option>
-                            <option value="2564">2564</option>
-                            <option value="2565">2565</option>
-                            <option value="2566">2566</option>
-                            <option value="2567">2567</option>
-                            <option value="2568">2568</option>
+                            <!-- Options จะถูกเติมจากข้อมูลจริง -->
                         </select>
                     </div>
                 </div>
 
-                <!-- Row 2: เจ้าของผลงาน + สังกัดภาควิชา -->
+                <!-- Row 2: สังกัดภาควิชา + ระดับผลงาน -->
                 <div class="filter-row">
-                    <div class="col">
-                        <label for="authorFilter">เจ้าของผลงาน</label>
-                        <input type="text" id="authorFilter" list="authorList" placeholder="พิมพ์ชื่อผู้สร้างสรรค์">
-                        <datalist id="authorList"></datalist>
-                    </div>
                     <div class="col">
                         <label for="deptFilter">สังกัดภาควิชา</label>
                         <select id="deptFilter">
@@ -74,14 +62,6 @@
                             <option>สำนักงานเลขานุการคณะ</option>
                         </select>
                     </div>
-                </div>
-
-                <!-- Row 3: ชื่อผลงาน + ระดับผลงาน -->
-                <div class="filter-row">
-                    <div class="col">
-                        <label for="keyword">ค้นหาชื่อผลงาน</label>
-                        <input type="text" id="keyword" placeholder="พิมพ์ชื่อผลงาน (ไทย/อังกฤษ)">
-                    </div>
                     <div class="col">
                         <label for="rankFilter">ระดับผลงาน</label>
                         <select id="rankFilter">
@@ -89,13 +69,26 @@
                             <option>วารสารระดับชาติ TCI กลุ่ม 1</option>
                             <option>วารสารระดับชาติ TCI กลุ่ม 2</option>
                             <option>Proceedings ระดับนานาชาติ</option> 
-                            <option>วารสารระดับชาติ Q1</option> 
-                            <option>วารสารระดับชาติ Q2</option> 
-                            <option>วารสารระดับชาติ Q3</option> 
-                            <option>วารสารระดับชาติ Q4</option> 
+                            <option>วารสารระดับนานาชาติ Q1</option> 
+                            <option>วารสารระดับนานาชาติ Q2</option> 
+                            <option>วารสารระดับนานาชาติ Q3</option> 
+                            <option>วารสารระดับนานาชาติ Q4</option> 
                             <option>วารสารระดับชาติไม่อยู่ในฐาน</option> 
                             <option>วารสารระดับชาติไม่อยู่ในฐาน TCI ไม่มีกลุ่ม เทียบคำ Proceedings</option>
                         </select>
+                    </div>
+                </div>
+
+                <!-- Row 3: เจ้าของผลงาน + ชื่อผลงาน -->
+                <div class="filter-row">
+                    <div class="col">
+                        <label for="authorFilter">ชื่อผู้ผลิตผลงาน (พิมพ์ค้นหา)</label>
+                        <input type="text" id="authorFilter" list="authorList" placeholder="พิมพ์ชื่อผู้ผลิตผลงาน">
+                        <datalist id="authorList"></datalist>
+                    </div>
+                    <div class="col">
+                        <label for="keyword">ชื่อผลงาน (พิมพ์ค้นหา)</label>
+                        <input type="text" id="keyword" placeholder="พิมพ์ชื่อผลงาน (ไทย/อังกฤษ)">
                     </div>
                 </div>
             </div>
@@ -114,8 +107,9 @@
                 <table id="dataTable">
                     <thead>
                         <tr>
+                            <th>ประเภทของปี</th>
                             <th>ปี</th>
-                            <th>เจ้าของผลงาน</th>
+                            <th>ชื่อผู้ผลิตผลงาน (เฉพาะบุคลากรคณะมนุษยศาสตร์)</th>
                             <th>สังกัดภาควิชา</th>
                             <th>ชื่อผลงาน</th>
                             <th>อ้างอิง</th>
@@ -123,7 +117,7 @@
                     </thead>
                     <tbody>
                         <tr>
-                            <td colspan="5" class="small">กำลังโหลดข้อมูล...</td>
+                            <td colspan="6" class="no-data">⏳ กำลังโหลดข้อมูล...</td>
                         </tr>
                     </tbody>
                 </table>
@@ -133,6 +127,6 @@
     </div>
 
     <!-- JavaScript -->
-    <script src="script.js"></script>
+    <script src="scripts.js"></script>
 </body>
 </html>
