@@ -5,6 +5,31 @@ let filteredData = [];
 // Google Sheets URL
 const SHEET_URL = 'https://docs.google.com/spreadsheets/d/e/2PACX-1vT2KK5zhWgJf9t21MO2qxykVWctw0sfJ8M7SwERKm0Nb7hxamhqfLEsa5vhqz5XHg/pub?gid=1841845518&single=true&output=csv';
 
+// ข้อมูลทดสอบ (ลบออกเมื่อ Google Sheets ใช้งานได้แล้ว)
+const TEST_DATA = [
+    {
+        'ปี': '2567',
+        'เจ้าของผลงาน': 'สถิตาภรณ์ ศรีหิรัญ',
+        'สังกัดภาควิชา': 'ภาษาอังกฤษ',
+        'ชื่อผลงาน': 'การศึกษาภาษาอังกฤษเพื่อการสื่อสาร',
+        'อ้างอิง': 'วารสารมนุษยศาสตร์และสังคมศาสตร์ ปีที่ 15 ฉบับที่ 1'
+    },
+    {
+        'ปี': '2566',
+        'เจ้าของผลงาน': 'ดร.สมชาย ใจดี',
+        'สังกัดภาควิชา': 'ภาษาไทย',
+        'ชื่อผลงาน': 'วรรณกรรมไทยร่วมสมัย',
+        'อ้างอิง': 'วารสาร TCI กลุ่ม 1'
+    },
+    {
+        'ปี': '2566',
+        'เจ้าของผลงาน': 'ผศ.ดร.วิภา จันทร์งาม',
+        'สังกัดภาควิชา': 'ภาษาตะวันออก',
+        'ชื่อผลงาน': 'Chinese Language Teaching Methods',
+        'อ้างอิง': 'International Journal Q2'
+    }
+];
+
 // เริ่มต้นเมื่อโหลดหน้าเสร็จ
 $(document).ready(function() {
     // โหลดข้อมูลจาก Google Sheets
@@ -24,6 +49,9 @@ $(document).ready(function() {
 function loadDataFromGoogleSheets() {
     $('#dataTable tbody').html('<tr><td colspan="5" class="loading">กำลังโหลดข้อมูล...</td></tr>');
 
+    // ลองใช้ข้อมูลทดสอบก่อน
+    console.log('Loading data...');
+    
     fetch(SHEET_URL)
         .then(response => {
             if (!response.ok) {
@@ -32,22 +60,30 @@ function loadDataFromGoogleSheets() {
             return response.text();
         })
         .then(csvData => {
+            console.log('CSV Data loaded:', csvData.substring(0, 200));
             allData = parseCSV(csvData);
+            
+            // ถ้าไม่มีข้อมูลจาก Google Sheets ให้ใช้ TEST_DATA
+            if (allData.length === 0) {
+                console.log('No data from Google Sheets, using test data');
+                allData = TEST_DATA;
+            }
+            
             filteredData = [...allData];
             populateAuthorsDatalist();
             displayData(filteredData);
             updateCount();
         })
         .catch(error => {
-            console.error('Error:', error);
-            $('#dataTable tbody').html(`
-                <tr>
-                    <td colspan="5" class="no-data">
-                        ⚠️ ไม่สามารถโหลดข้อมูลได้<br>
-                        <small>กรุณาตรวจสอบว่า Google Sheets ถูกแชร์เป็นสาธารณะแล้ว</small>
-                    </td>
-                </tr>
-            `);
+            console.error('Error loading from Google Sheets:', error);
+            console.log('Using test data instead');
+            
+            // ใช้ข้อมูลทดสอบแทน
+            allData = TEST_DATA;
+            filteredData = [...allData];
+            populateAuthorsDatalist();
+            displayData(filteredData);
+            updateCount();
         });
 }
 
