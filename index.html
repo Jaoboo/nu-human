@@ -9,7 +9,80 @@
     <body>
         <h1>ข้อมูลผลงานในการตีพิมพ์ปี พ.ศ. 2560 - 2568</h1>
         <div class="search-data">
-            <label ><input type="text" id="searchInput" placeholder="ค้นหาข้อมูล"></label>
+            <fieldset>
+                <!-- EX >> <label for="name" id="name-label">Name: <input placeholder="UR dog name..." id="name" name:"name" required /></label> -->
+                <fieldset>
+                    <label>ข้อมูลปี</label>
+                    <label>ประเภท:
+                        <select id="dropdown">
+                            <option value="">ปีการศึกษา</option>
+                            <option value="1">ปีงบประมาณ</option>
+                            <option value="2">ปีปฏิทิน</option>
+                        </select>
+                    </label>
+                    <label>ปี:
+                        <select id="dropdown">
+                            <option value="">ทั้งหมด</option>
+                            <option value="1">2560</option>
+                            <option value="2">2561</option>
+                            <option value="3">2562</option>
+                            <option value="4">2563</option>
+                            <option value="5">2564</option>
+                            <option value="6">2565</option>
+                            <option value="7">2566</option>
+                            <option value="8">2567</option>
+                            <option value="9">2568</option>
+                        </select>
+                    </label>
+                </fieldset>
+                <fieldset>
+                    <label>สังกัดภาควิชา:
+                        <select id="dropdown">
+                            <option value="">ทั้งหมด</option>
+                            <option value="1">2560</option>
+                            <option value="2">2561</option>
+                            <option value="3">2562</option>
+                            <option value="4">2563</option>
+                            <option value="5">2564</option>
+                            <option value="6">2565</option>
+                            <option value="7">2566</option>
+                            <option value="8">2567</option>
+                            <option value="9">2568</option>
+                        </select>
+                    </label>
+                    <label>ระดับผลงาน:
+                        <input list="years" value="ทั้งหมด">
+                        <datalist id="years">
+                            <option value="ทั้งหมด">
+                            <option value="วารสารระดับชาติ TCI กลุ่ม 1">
+                            <option value="2561">
+                            <option value="2562">
+                            <option value="2563">
+                            <option value="2564">
+                            <option value="2565">
+                            <option value="2566">
+                            <option value="2567">
+                            <option value="2568">
+                        </datalist>
+                    </label>
+
+                    <label>ผู้สร้างสรรค์ผลงาน:
+                        <select id="dropdown">
+                            <option value="">All</option>
+                            <option value="1">2560</option>
+                            <option value="2">2561</option>
+                            <option value="3">2562</option>
+                            <option value="4">2563</option>
+                            <option value="5">2564</option>
+                            <option value="6">2565</option>
+                            <option value="7">2566</option>
+                            <option value="8">2567</option>
+                            <option value="9">2568</option>
+                        </select>
+                    </label>
+                </fieldset>
+                <label for="name" id="name-label">ชื่อผลงาน(ภาษาไทย/English): <input type="text" id="name" placeholder="ค้นหาข้อมูล"></label>
+            </fieldset>
         </div>
         <div class="table-container">
             <table id="dataTable">
