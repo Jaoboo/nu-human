@@ -1,5 +1,5 @@
 :root {
-    --orange: #ff6f00;
+    --orange: #e87c1e;
     --green: #4caf50;
     --gray: #757575;
     --bg: #f4f5f6;
@@ -31,19 +31,18 @@ body {
 .header { 
     display: flex; 
     align-items: center; 
-    gap: 20px; 
+    gap: 40px; 
     margin-bottom: 20px; 
     padding-bottom: 15px;
-    border-bottom: 3px solid var(--orange);
 }
 
 .header .logo img { 
-    width: 120px; 
+    width: 100px; 
     height: auto; 
 }
 
 .header h1 { 
-    font-size: 28px; 
+    font-size: 45px; 
     color: #424242; 
     font-weight: 600;
 }
@@ -132,15 +131,7 @@ body {
     transform: translateY(0);
 }
 
-.controls-row .btn.search { 
-    background: var(--orange); 
-    color: white; 
-}
-
-.controls-row .btn.search:hover {
-    background: #e66300;
-}
-
+/* Reset Button */
 .controls-row .btn.reset { 
     background: #6b6f73; 
     color: white; 
@@ -149,7 +140,7 @@ body {
 .controls-row .btn.reset:hover {
     background: #5a5d61;
 }
-
+/* Excel Button */
 .controls-row .btn.excel { 
     background: var(--green); 
     color: white; 
@@ -167,8 +158,81 @@ body {
 }
 
 .controls-row .result-count span {
-    color: var(--orange);
+    color: var(--gray);
+    font-size: 14px;
+}
+
+/* Table */
+.table-header-section {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 15px;
+    gap: 10px;
+}
+
+.table-header-section h2 {
     font-size: 18px;
+    color: #424242;
+    font-weight: 600;
+    margin: 0;
+    flex: 1;
+}
+
+/* Refresh Button - Updated to match Excel button size */
+.table-header-section .btn.refresh {
+    background: var(--orange);
+    color: white;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    min-width: 100px;
+}
+
+.table-header-section .btn.refresh:hover {
+    background: #e57419;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.table-header-section .btn.refresh:active {
+    transform: translateY(0);
+}
+
+.table-header-section .btn.refresh i {
+    font-size: 14px;
+}
+
+/* Excel Button */
+.table-header-section .btn.excel-table {
+    background: var(--green);
+    color: white;
+    padding: 10px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.3s ease;
+    min-width: 100px;
+}
+
+.table-header-section .btn.excel-table:hover {
+    background: #43a047;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 8px rgba(0,0,0,0.15);
+}
+
+.table-header-section .btn.excel-table:active {
+    transform: translateY(0);
 }
 
 /* Table */
@@ -180,7 +244,49 @@ table {
     width: 100%; 
     border-collapse: collapse; 
     min-width: 900px; 
-    font-size: 14px; 
+    font-size: 14px;
+    table-layout: fixed;
+}
+
+/* Column widths */
+table th:nth-child(1),
+table td:nth-child(1) { 
+    width: 12%; /* ประเภทของปี */
+}
+
+table th:nth-child(2),
+table td:nth-child(2) { 
+    width: 10%; /* ปี */
+}
+
+table th:nth-child(3),
+table td:nth-child(3) { 
+    width: 17%; /* ชื่อผู้ผลิตผลงาน */
+}
+
+table th:nth-child(4),
+table td:nth-child(4) { 
+    width: 15%; /* สังกัดภาควิชา */
+}
+
+table th:nth-child(5),
+table td:nth-child(5) { 
+    width: 30%; /* ชื่อผลงาน (ไทย) */
+}
+
+table th:nth-child(6),
+table td:nth-child(6) { 
+    width: 30%; /* ชื่อผลงาน (Eng) */
+}
+
+table th:nth-child(7),
+table td:nth-child(7) { 
+    width: 30%; /* ระดับผลงาน */
+}
+
+table th:nth-child(8),
+table td:nth-child(8) { 
+    width: 29%; /* อ้างอิง */
 }
 
 thead { 
@@ -191,17 +297,42 @@ thead {
 th { 
     padding: 12px 10px; 
     border: 1px solid #e0e0e0; 
-    text-align: left;
+    text-align: center;
     font-weight: 600;
     position: sticky;
     top: 0;
     z-index: 10;
+    vertical-align: middle;
 }
 
 td { 
     padding: 10px; 
     border: 1px solid #e0e0e0; 
-    text-align: left; 
+    text-align: left;
+    vertical-align: top;
+    word-wrap: break-word;
+    word-break: break-word;
+    overflow-wrap: break-word;
+    white-space: normal;
+    overflow: hidden;
+}
+
+/* Center align for specific columns - ประเภทของปี, ปี, ชื่อผลงาน (ไทย), ชื่อผลงาน (Eng) */
+td:nth-child(1),
+td:nth-child(2),
+td:nth-child(3),
+td:nth-child(4),
+td:nth-child(5),
+td:nth-child(6),
+td:nth-child(7) { 
+    text-align: center; 
+    vertical-align: middle;
+}
+
+/* Center align for cells containing only "-" */
+td.center-dash {
+    text-align: center !important;
+    vertical-align: middle !important;
 }
 
 tbody tr:nth-child(even) { 
@@ -231,12 +362,24 @@ tbody tr:hover {
     } 
     
     table { 
-        min-width: 800px; 
+        min-width: 100%;
+        font-size: 13px;
+    }
+    
+    td, th {
+        padding: 8px 5px;
+        font-size: 12px;
     }
     
     .header {
         flex-direction: column;
         text-align: center;
+    }
+    
+    .table-header-section {
+        flex-direction: column;
+        gap: 10px;
+        align-items: flex-start;
     }
 }
 
@@ -250,8 +393,13 @@ tbody tr:hover {
     }
     
     table { 
-        min-width: 600px; 
-        font-size: 13px; 
+        min-width: 100%;
+        font-size: 11px;
+    }
+    
+    td, th {
+        padding: 6px 4px;
+        font-size: 11px;
     }
     
     .header h1 {
