@@ -101,7 +101,7 @@ $(document).ready(function() {
 
 // ฟังก์ชันโหลดข้อมูลจาก Google Sheets
 function loadData(isRefresh = false) {
-    console.log('📥 Loading data from Google Sheets...');
+    console.log('Loading data from Google Sheets...');
     console.log('SHEET_ID:', SHEET_ID);
     console.log('SHEET_NAME:', SHEET_NAME);
     
@@ -207,8 +207,6 @@ function populateDropdownOptions() {
     // ดึงประเภทปีที่เลือก
     const yearType = $('#typeFilter').val().trim() || 'ปีการศึกษา';
     
-    console.log('🔍 กำลังประมวลผล allData:', allData.length, 'แถว');
-    
     allData.forEach((row, index) => {
         const columns = Object.values(row);
         
@@ -242,11 +240,6 @@ function populateDropdownOptions() {
         }
     });
 
-    console.log('📊 ข้อมูลที่ดึงได้จาก Google Sheets:');
-    console.log('  ปี:', Array.from(years).sort((a, b) => b - a));
-    console.log('  ภาควิชา:', Array.from(depts).sort());
-    console.log('  ระดับผลงาน:', Array.from(ranks).sort());
-
     // ============================================
     // เติมข้อมูล ปี (ไม่มี default - แสดงทั้งหมดจาก Sheets)
     // ============================================
@@ -259,8 +252,6 @@ function populateDropdownOptions() {
         const selected = year == currentYear ? 'selected' : '';
         $yearFilter.append(`<option value="${year}" ${selected}>${year}</option>`);
     });
-    
-    console.log('✅ ปีที่แสดงใน dropdown:', yearArray.length, 'รายการ');
     
     // ============================================
     // เติมข้อมูล สังกัดภาควิชา - เพิ่มเฉพาะที่ไม่ซ้ำกับ default
@@ -280,12 +271,6 @@ function populateDropdownOptions() {
         const normalizedDept = normalizeText(dept);
         return !defaultDeptsMap.has(normalizedDept);
     });
-    
-    if (newDepts.length > 0) {
-        console.log('✨ ภาควิชาใหม่ที่เพิ่มเข้ามา:', newDepts);
-    } else {
-        console.log('ℹ️ ไม่มีภาควิชาใหม่ (ทุกภาควิชามีใน default อยู่แล้ว)');
-    }
     
     // รวม default + ใหม่ แล้วเรียงตัวอักษร
     const allDepts = [
@@ -321,12 +306,6 @@ function populateDropdownOptions() {
         return !defaultRanksMap.has(normalizedRank);
     });
     
-    if (newRanks.length > 0) {
-        console.log('✨ ระดับผลงานใหม่ที่เพิ่มเข้ามา:', newRanks);
-    } else {
-        console.log('ℹ️ ไม่มีระดับผลงานใหม่ (ทุกระดับมีใน default อยู่แล้ว)');
-    }
-    
     // รวม default + ใหม่ แล้วเรียงตัวอักษร
     const allRanks = [
         ...defaultOptions.rank.filter(r => r !== "ทั้งหมด"),
@@ -341,17 +320,6 @@ function populateDropdownOptions() {
         const selected = rank == currentRank ? 'selected' : '';
         $rankFilter.append(`<option value="${rank}" ${selected}>${rank}</option>`);
     });
-    
-    console.log('✅ ระดับผลงานที่แสดงใน dropdown:', allRanks.length, 'รายการ (เรียงตามตัวอักษร)');
-    
-    // ============================================
-    // สรุปผลลัพธ์
-    // ============================================
-    console.log('📋 สรุปข้อมูลทั้งหมดใน Dropdown:');
-    console.log('  - ปี:', years.size, 'รายการ (ทั้งหมดจาก Google Sheets)');
-    console.log('  - ภาควิชา:', defaultDeptsMap.size, 'default +', newDepts.length, 'ใหม่ =', allDepts.length, 'รายการ (เรียงตามตัวอักษร)');
-    console.log('  - ระดับผลงาน:', defaultRanksMap.size, 'default +', newRanks.length, 'ใหม่ =', allRanks.length, 'รายการ (เรียงตามตัวอักษร)');
-    console.log('━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━');
 }
 
 // ฟังก์ชันกรองข้อมูล
@@ -421,7 +389,6 @@ function filterData() {
         return true;
     });
 
-    console.log('✅ Filtered results:', filteredData.length);
     displayData(filteredData);
     updateCount();
 }
@@ -435,8 +402,6 @@ function displayData(data) {
         $tbody.html('<tr><td colspan="8" class="no-data">ไม่พบข้อมูล</td></tr>');
         return;
     }
-
-    console.log('📊 Displaying', data.length, 'rows');
 
     // ดึงค่าประเภทปีที่เลือก
     const yearType = $('#typeFilter').val().trim() || 'ปีการศึกษา';
@@ -512,7 +477,6 @@ function displayData(data) {
 // ฟังก์ชันอัพเดทจำนวนผลลัพธ์
 function updateCount() {
     $('#count').text(filteredData.length);
-    console.log('📈 Count updated:', filteredData.length);
 }
 
 // ฟังก์ชัน Export ไปยัง Excel - Export เฉพาะข้อมูลที่แสดงในตาราง (filteredData)
@@ -521,8 +485,6 @@ function exportTableToExcel() {
         showNotification('ไม่มีข้อมูลสำหรับ Export', 'warning');
         return;
     }
-
-    console.log('📤 Exporting', filteredData.length, 'rows to Excel');
 
     // สร้าง workbook
     const wb = XLSX.utils.book_new();
@@ -582,7 +544,4 @@ function exportTableToExcel() {
     
     // Download ไฟล์
     XLSX.writeFile(wb, fileName);
-    
-    console.log('✅ Excel file exported:', fileName);
-    showNotification(`Export สำเร็จ: ${filteredData.length} แถว`, 'success');
 }
