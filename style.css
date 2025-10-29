@@ -261,7 +261,7 @@ table td:nth-child(2) {
 
 table th:nth-child(3),
 table td:nth-child(3) { 
-    width: 17%; /* ชื่อผู้ผลิตผลงาน */
+    width: 20%; /* ชื่อผู้ผลิตผลงาน */
 }
 
 table th:nth-child(4),
