@@ -8,12 +8,21 @@ function normalizeText(text) {
     return text.toString().replace(/\s+/g, '').toLowerCase();
 }
 
-// ฟังก์ชันแปลงวันที่เป็น mm-yyyy
+// ฟังก์ชันแปลงวันที่เป็น mm-yyyy (พ.ศ.)
 function formatDateToMonthYear(dateValue) {
     if (!dateValue || dateValue === '-' || dateValue === '') return '-';
     
     try {
         let date;
+        const str = dateValue.toString();
+        
+        // ตรวจสอบรูปแบบ Date(yyyy,m,d) จาก Google Sheets
+        const dateMatch = str.match(/Date\((\d{4}),(\d{1,2}),(\d{1,2})\)/);
+        if (dateMatch) {
+            const year = parseInt(dateMatch[1]) + 543; // แปลงเป็น พ.ศ.
+            const month = dateMatch[2].padStart(2, '0');
+            return `${month}-${year}`;
+        }
         
         // ถ้าเป็นตัวเลข (Excel date serial number)
         if (typeof dateValue === 'number') {
@@ -27,7 +36,6 @@ function formatDateToMonthYear(dateValue) {
         // ตรวจสอบว่า date ถูกต้องหรือไม่
         if (isNaN(date.getTime())) {
             // ถ้าแปลงไม่ได้ ให้ลองดึงเดือนและปีจาก string โดยตรง
-            const str = dateValue.toString();
             
             // ลองหารูปแบบต่างๆ เช่น "12/2024", "2024-12", "Dec 2024" ฯลฯ
             const patterns = [
@@ -42,12 +50,12 @@ function formatDateToMonthYear(dateValue) {
                     let month, year;
                     if (pattern.source.startsWith('(\\d{4})')) {
                         // yyyy-mm format
-                        year = match[1];
+                        year = parseInt(match[1]) + 543; // แปลงเป็น พ.ศ.
                         month = match[2].padStart(2, '0');
                     } else {
                         // mm/yyyy or mm-yyyy format
                         month = match[1].padStart(2, '0');
-                        year = match[2];
+                        year = parseInt(match[2]) + 543; // แปลงเป็น พ.ศ.
                     }
                     return `${month}-${year}`;
                 }
@@ -57,9 +65,9 @@ function formatDateToMonthYear(dateValue) {
             return dateValue.toString();
         }
         
-        // แปลงเป็น mm-yyyy
+        // แปลงเป็น mm-yyyy (พ.ศ.)
         const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear();
+        const year = date.getFullYear() + 543; // แปลงเป็น พ.ศ.
         
         return `${month}-${year}`;
     } catch (error) {
