@@ -1,5 +1,5 @@
 :root {
-    --orange: #e87c1e;
+    --orange: #f58220;
     --green: #4caf50;
     --gray: #757575;
     --bg: #f4f5f6;
@@ -22,27 +22,27 @@ body {
 }
 
 .container { 
-    max-width: 1400px; 
+    max-width: 95%; /* ใช้ % ให้ยืดหยุ่น */
     margin: 0 auto; 
-    padding: 20px; 
+    padding: 20px;
 }
 
 /* Header */
 .header { 
     display: flex; 
     align-items: center; 
-    gap: 40px; 
+    gap: 20px; 
     margin-bottom: 20px; 
     padding-bottom: 15px;
 }
 
 .header .logo img { 
-    width: 100px; 
+    width: 120px; 
     height: auto; 
 }
 
 .header h1 { 
-    font-size: 45px; 
+    font-size: 28px; 
     color: #424242; 
     font-weight: 600;
 }
@@ -53,7 +53,8 @@ body {
     padding: 20px; 
     border-radius: var(--radius); 
     box-shadow: var(--shadow); 
-    margin-bottom: 20px; 
+    margin-bottom: 20px;
+    border: 1px solid #e0e0e0; /* เพิ่มขอบ */
 }
 
 /* Filters - Updated Layout */
@@ -81,26 +82,39 @@ body {
     color: #424242;
 }
 
+/* แก้ไข - เพิ่มขอบล่างชัดเจน */
 .filters select, 
-.filters input { 
+.filters input,
+select { 
     padding: 10px 12px; 
     border-radius: 8px; 
-    border: 1px solid #ddd; 
+    border: 1px solid #ddd !important;
+    border-bottom: 2px solid #999 !important; /* เพิ่มขอบล่างชัดเจน */
     font-size: 14px;
     transition: all 0.3s ease;
     background: white;
 }
 
 .filters select:focus, 
-.filters input:focus { 
+.filters input:focus,
+select:focus { 
     outline: none;
-    border-color: var(--orange);
+    border-color: var(--orange) !important;
+    border-bottom-color: var(--orange) !important; /* ขอบล่างตอน focus */
     box-shadow: 0 0 0 3px rgba(255, 111, 0, 0.1);
 }
 
 .filters select:hover, 
-.filters input:hover { 
-    border-color: #bbb;
+.filters input:hover,
+select:hover { 
+    border-color: #bbb !important;
+    border-bottom-color: #666 !important; /* ขอบล่างตอน hover */
+}
+
+/* เพิ่มขอบให้ dropdown options */
+.filters select option {
+    border-bottom: 1px solid #e0e0e0;
+    padding: 8px;
 }
 
 /* Controls */
@@ -140,6 +154,7 @@ body {
 .controls-row .btn.reset:hover {
     background: #5a5d61;
 }
+
 /* Excel Button */
 .controls-row .btn.excel { 
     background: var(--green); 
@@ -242,51 +257,58 @@ body {
 
 table { 
     width: 100%; 
-    border-collapse: collapse; 
-    min-width: 900px; 
+    border-collapse: separate;
+    border-spacing: 0;
+    min-width: 1200px; /* min-width สำหรับหน้าจอเล็ก */
     font-size: 14px;
-    table-layout: fixed;
+    table-layout: auto; /* เปลี่ยนเป็น auto ให้ยืดหยุ่น */
+    border: 1px solid #ccc;
 }
 
-/* Column widths */
+/* Column widths - ใช้ % ให้ยืดหยุ่นกับหน้าจอ */
 table th:nth-child(1),
 table td:nth-child(1) { 
-    width: 12%; /* ประเภทของปี */
+    width: 8%; /* ประเภทของปี */
 }
 
 table th:nth-child(2),
 table td:nth-child(2) { 
-    width: 10%; /* ปี */
+    width: 5%; /* ปี (พ.ศ.) */
 }
 
 table th:nth-child(3),
 table td:nth-child(3) { 
-    width: 20%; /* ชื่อผู้ผลิตผลงาน */
+    width: 15%; /* ชื่อผู้ผลิตผลงาน */
 }
 
 table th:nth-child(4),
 table td:nth-child(4) { 
-    width: 15%; /* สังกัดภาควิชา */
+    width: 10%; /* สังกัดภาควิชา */
 }
 
 table th:nth-child(5),
 table td:nth-child(5) { 
-    width: 30%; /* ชื่อผลงาน (ไทย) */
+    width: 15%; /* ชื่อผลงาน (ไทย) - เพิ่ม */
 }
 
 table th:nth-child(6),
 table td:nth-child(6) { 
-    width: 30%; /* ชื่อผลงาน (Eng) */
+    width: 15%; /* ชื่อผลงาน (Eng) - เพิ่ม */
 }
 
 table th:nth-child(7),
 table td:nth-child(7) { 
-    width: 30%; /* ระดับผลงาน */
+    width: 5%; /* ระดับผลงาน */
 }
 
 table th:nth-child(8),
 table td:nth-child(8) { 
-    width: 29%; /* อ้างอิง */
+    width: 20%; /* อ้างอิง - เพิ่ม */
+}
+
+table th:nth-child(9),
+table td:nth-child(9) { 
+    width: 3%; /* Published (mm-yyyy) - ลด */
 }
 
 thead { 
@@ -295,19 +317,23 @@ thead {
 }
 
 th { 
-    padding: 12px 10px; 
-    border: 1px solid #e0e0e0; 
+    padding: 10px 8px; 
+    border: 1px solid #ccc;
+    border-right: 1px solid #ccc; /* เพิ่มขอบขวา */
+    border-bottom: 1px solid #ccc; /* เพิ่มขอบล่าง */
     text-align: center;
     font-weight: 600;
     position: sticky;
     top: 0;
     z-index: 10;
     vertical-align: middle;
+    background: var(--orange);
 }
 
 td { 
-    padding: 10px; 
-    border: 1px solid #e0e0e0; 
+    padding: 8px 8px; 
+    border-right: 1px solid #ddd; /* ขอบขวา */
+    border-bottom: 1px solid #ddd; /* ขอบล่าง */
     text-align: left;
     vertical-align: top;
     word-wrap: break-word;
@@ -317,16 +343,36 @@ td {
     overflow: hidden;
 }
 
-/* Center align for specific columns - ประเภทของปี, ปี, ชื่อผลงาน (ไทย), ชื่อผลงาน (Eng) */
+/* เซลล์สุดท้ายของแต่ละแถว */
+th:last-child,
+td:last-child {
+    border-right: none; /* ไม่ต้องมีขอบขวา (ให้ตารางมีขอบแทน) */
+}
+
+/* แถวสุดท้าย */
+tbody tr:last-child td {
+    border-bottom: none; /* ไม่ต้องมีขอบล่าง (ให้ตารางมีขอบแทน) */
+}
+
+/* Center align for specific columns */
+/* ประเภทของปี, ปี, ระดับผลงาน, Published */
 td:nth-child(1),
 td:nth-child(2),
 td:nth-child(3),
 td:nth-child(4),
 td:nth-child(5),
 td:nth-child(6),
-td:nth-child(7) { 
+td:nth-child(7),
+td:nth-child(9) { 
     text-align: center; 
     vertical-align: middle;
+}
+
+/* Left align for text-heavy columns */
+/* ชื่อผู้ผลิตผลงาน, สังกัดภาควิชา, ชื่อผลงาน (ไทย/Eng), อ้างอิง */
+td:nth-child(8) { 
+    text-align: left; 
+    vertical-align: top;
 }
 
 /* Center align for cells containing only "-" */
@@ -356,18 +402,28 @@ tbody tr:hover {
 }
 
 /* Responsive */
+@media (max-width: 1400px) {
+    .container {
+        max-width: 98%;
+        padding: 15px;
+    }
+}
+
 @media (max-width: 980px) { 
     .filter-row { 
         grid-template-columns: 1fr; 
     } 
     
+    .container {
+        padding: 10px;
+    }
+    
     table { 
-        min-width: 100%;
         font-size: 13px;
     }
     
     td, th {
-        padding: 8px 5px;
+        padding: 8px 6px;
         font-size: 12px;
     }
     
@@ -385,15 +441,14 @@ tbody tr:hover {
 
 @media (max-width: 600px) { 
     .container {
-        padding: 10px;
+        padding: 8px;
     }
     
     .card {
-        padding: 15px;
+        padding: 12px;
     }
     
     table { 
-        min-width: 100%;
         font-size: 11px;
     }
     
@@ -430,4 +485,16 @@ tbody tr:hover {
 .loading {
     display: inline-block;
     animation: spin 1s linear infinite;
+}
+
+/* Notification Animation */
+@keyframes slideIn {
+    from {
+        transform: translateX(100%);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
 }

@@ -8,6 +8,66 @@ function normalizeText(text) {
     return text.toString().replace(/\s+/g, '').toLowerCase();
 }
 
+// ฟังก์ชันแปลงวันที่เป็น mm-yyyy
+function formatDateToMonthYear(dateValue) {
+    if (!dateValue || dateValue === '-' || dateValue === '') return '-';
+    
+    try {
+        let date;
+        
+        // ถ้าเป็นตัวเลข (Excel date serial number)
+        if (typeof dateValue === 'number') {
+            // แปลง Excel serial number เป็น Date
+            date = new Date((dateValue - 25569) * 86400 * 1000);
+        } else {
+            // ถ้าเป็น string ให้แปลงเป็น Date
+            date = new Date(dateValue);
+        }
+        
+        // ตรวจสอบว่า date ถูกต้องหรือไม่
+        if (isNaN(date.getTime())) {
+            // ถ้าแปลงไม่ได้ ให้ลองดึงเดือนและปีจาก string โดยตรง
+            const str = dateValue.toString();
+            
+            // ลองหารูปแบบต่างๆ เช่น "12/2024", "2024-12", "Dec 2024" ฯลฯ
+            const patterns = [
+                /(\d{1,2})\/(\d{4})/,           // mm/yyyy หรือ m/yyyy
+                /(\d{4})-(\d{1,2})/,            // yyyy-mm
+                /(\d{1,2})-(\d{4})/,            // mm-yyyy
+            ];
+            
+            for (const pattern of patterns) {
+                const match = str.match(pattern);
+                if (match) {
+                    let month, year;
+                    if (pattern.source.startsWith('(\\d{4})')) {
+                        // yyyy-mm format
+                        year = match[1];
+                        month = match[2].padStart(2, '0');
+                    } else {
+                        // mm/yyyy or mm-yyyy format
+                        month = match[1].padStart(2, '0');
+                        year = match[2];
+                    }
+                    return `${month}-${year}`;
+                }
+            }
+            
+            // ถ้าไม่ match pattern ใดเลย ให้คืนค่าเดิม
+            return dateValue.toString();
+        }
+        
+        // แปลงเป็น mm-yyyy
+        const month = String(date.getMonth() + 1).padStart(2, '0');
+        const year = date.getFullYear();
+        
+        return `${month}-${year}`;
+    } catch (error) {
+        console.error('Error formatting date:', dateValue, error);
+        return dateValue.toString();
+    }
+}
+
 // Default Options สำหรับแต่ละ Dropdown
 const defaultOptions = {
     dept: [
@@ -37,6 +97,67 @@ const defaultOptions = {
 const SHEET_ID = '1CJhSu3XwPTC35SxXzGnOwz8a8c_D_1eI';
 const SHEET_NAME = 'web app(อยู่ระหว่างจัดทำ)';
 
+// ฟังก์ชันดึงค่าจาก URL Parameters
+function getURLParameters() {
+    const params = new URLSearchParams(window.location.search);
+    return {
+        type: params.get('type') || 'ปีการศึกษา',
+        year: params.get('year') || '',
+        dept: params.get('dept') || '',
+        rank: params.get('rank') || '',
+        author: params.get('author') || '',
+        keyword: params.get('keyword') || ''
+    };
+}
+
+// ฟังก์ชันอัพเดท URL Parameters
+function updateURLParameters() {
+    const params = new URLSearchParams();
+    
+    const type = $('#typeFilter').val();
+    const year = $('#yearFilter').val();
+    const dept = $('#deptFilter').val();
+    const rank = $('#rankFilter').val();
+    const author = $('#authorFilter').val();
+    const keyword = $('#keyword').val();
+    
+    // เพิ่มเฉพาะค่าที่ไม่ว่าง
+    if (type && type !== 'ปีการศึกษา') params.set('type', type);
+    if (year) params.set('year', year);
+    if (dept) params.set('dept', dept);
+    if (rank) params.set('rank', rank);
+    if (author) params.set('author', author);
+    if (keyword) params.set('keyword', keyword);
+    
+    // อัพเดท URL โดยไม่ reload หน้า
+    const newURL = params.toString() ? 
+        `${window.location.pathname}?${params.toString()}` : 
+        window.location.pathname;
+    
+    window.history.pushState({}, '', newURL);
+}
+
+// ฟังก์ชันโหลดค่า filter จาก URL
+function loadFiltersFromURL() {
+    const params = getURLParameters();
+    
+    $('#typeFilter').val(params.type);
+    
+    // รอให้ dropdown โหลดเสร็จก่อนตั้งค่า
+    setTimeout(() => {
+        if (params.year) $('#yearFilter').val(params.year);
+        if (params.dept) $('#deptFilter').val(params.dept);
+        if (params.rank) $('#rankFilter').val(params.rank);
+        if (params.author) $('#authorFilter').val(params.author);
+        if (params.keyword) $('#keyword').val(params.keyword);
+        
+        // กรองข้อมูลตาม URL parameters
+        if (params.year || params.dept || params.rank || params.author || params.keyword) {
+            filterData();
+        }
+    }, 500);
+}
+
 // เริ่มต้นเมื่อโหลดหน้าเสร็จ
 $(document).ready(function() {
     
@@ -52,6 +173,9 @@ $(document).ready(function() {
         $('#rankFilter').val('');
         $('#authorFilter').val('');
         $('#keyword').val('');
+        
+        // ล้าง URL parameters
+        window.history.pushState({}, '', window.location.pathname);
         
         // แสดงข้อมูลทั้งหมด
         filteredData = [...allData];
@@ -80,22 +204,27 @@ $(document).ready(function() {
         populateDropdownOptions();
         // กรองข้อมูลใหม่
         filterData();
+        // อัพเดท URL
+        updateURLParameters();
     });
     
     $('#yearFilter, #deptFilter, #rankFilter').on('change', function() {
         console.log('Dropdown changed:', $(this).attr('id'), '=', $(this).val());
         filterData();
+        updateURLParameters();
     });
     
     // Input text: ค้นหาแบบ Real-time เมื่อพิมพ์
     $('#keyword, #authorFilter').on('input', function() {
         console.log('Input changed:', $(this).attr('id'), '=', $(this).val());
         filterData();
+        updateURLParameters();
     });
     
     // ปุ่มค้นหา - กรองข้อมูลอีกครั้ง
     $('.btn.search').click(function() {
         filterData();
+        updateURLParameters();
     });
 });
 
@@ -107,7 +236,7 @@ function loadData(isRefresh = false) {
     
     if (!SHEET_ID || SHEET_ID === '') {
         alert('กรุณาใส่ SHEET_ID ในไฟล์ script.js');
-        $('#dataTable tbody').html('<tr><td colspan="8" class="no-data">กรุณาใส่ SHEET_ID</td></tr>');
+        $('#dataTable tbody').html('<tr><td colspan="9" class="no-data">กรุณาใส่ SHEET_ID</td></tr>');
         return;
     }
     
@@ -116,7 +245,7 @@ function loadData(isRefresh = false) {
     const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}${timestamp}`;
     
     // แสดง Loading
-    $('#dataTable tbody').html('<tr><td colspan="8" style="text-align:center; padding:20px;">⏳ กำลังโหลดข้อมูล...</td></tr>');
+    $('#dataTable tbody').html('<tr><td colspan="9" style="text-align:center; padding:20px;">⏳ กำลังโหลดข้อมูล...</td></tr>');
     
     $.ajax({
         url: url,
@@ -165,6 +294,9 @@ function loadData(isRefresh = false) {
                 displayData(filteredData);
                 updateCount();
                 
+                // โหลดค่า filter จาก URL parameters
+                loadFiltersFromURL();
+                
                 // ซ่อน loading animation
                 $('.btn.refresh i').removeClass('loading');
                 
@@ -173,7 +305,7 @@ function loadData(isRefresh = false) {
                 console.error('Error parsing data:', error);
                 console.error('Error stack:', error.stack);
                 alert('เกิดข้อผิดพลาดในการแปลงข้อมูล\n\n' + error.message);
-                $('#dataTable tbody').html('<tr><td colspan="8" class="no-data">เกิดข้อผิดพลาดในการแปลงข้อมูล<br>' + error.message + '</td></tr>');
+                $('#dataTable tbody').html('<tr><td colspan="9" class="no-data">เกิดข้อผิดพลาดในการแปลงข้อมูล<br>' + error.message + '</td></tr>');
                 $('.btn.refresh i').removeClass('loading');
             }
         },
@@ -210,21 +342,23 @@ function populateDropdownOptions() {
     allData.forEach((row, index) => {
         const columns = Object.values(row);
         
-        // เลือก index ตามประเภทปี
-        let yearIndex = 2; // default ปีการศึกษา
-        
-        if(yearType === "ปีการศึกษา") {
-            yearIndex = 2;
-        } else if(yearType === "ปีปฏิทิน") {
-            yearIndex = 1;
-        } else if(yearType === "ปีงบประมาณ") {
-            yearIndex = 0;
+        // ดึงปีจากทั้ง 3 คอลัมน์ (index 0, 1, 2)
+        // ปีงบประมาณ - index 0
+        const budgetYear = columns[0];
+        if (budgetYear != null && budgetYear.toString().trim() !== '') {
+            years.add(budgetYear.toString().trim());
         }
         
-        // ดึงปี
-        const yearValue = columns[yearIndex];
-        if (yearValue != null && yearValue.toString().trim() !== '') {
-            years.add(yearValue.toString().trim());
+        // ปีปฏิทิน - index 1
+        const calendarYear = columns[1];
+        if (calendarYear != null && calendarYear.toString().trim() !== '') {
+            years.add(calendarYear.toString().trim());
+        }
+        
+        // ปีการศึกษา - index 2
+        const academicYear = columns[2];
+        if (academicYear != null && academicYear.toString().trim() !== '') {
+            years.add(academicYear.toString().trim());
         }
         
         // ดึงภาควิชา (index 4)
@@ -241,7 +375,7 @@ function populateDropdownOptions() {
     });
 
     // ============================================
-    // เติมข้อมูล ปี (ไม่มี default - แสดงทั้งหมดจาก Sheets)
+    // เติมข้อมูล ปี (จากทั้ง 3 คอลัมน์)
     // ============================================
     const currentYear = $('#yearFilter').val(); // เก็บค่าที่เลือกไว้
     const $yearFilter = $('#yearFilter');
@@ -399,7 +533,7 @@ function displayData(data) {
     $tbody.empty();
 
     if (data.length === 0) {
-        $tbody.html('<tr><td colspan="8" class="no-data">ไม่พบข้อมูล</td></tr>');
+        $tbody.html('<tr><td colspan="9" class="no-data">ไม่พบข้อมูล</td></tr>');
         return;
     }
 
@@ -458,6 +592,11 @@ function displayData(data) {
         // อ้างอิง
         const reference = getValue(columns[10]);
 
+        // Published - แปลงเป็น mm-yyyy
+        const publishedRaw = getValue(columns[14]);
+        const published = formatDateToMonthYear(publishedRaw);
+        
+
         const rowHTML = `
             <tr>
                 <td>${yearType}</td>
@@ -468,6 +607,7 @@ function displayData(data) {
                 <td>${titleEng}</td>
                 <td class="${level === '-' ? 'center-dash' : ''}">${level}</td>
                 <td class="${reference === '-' ? 'center-dash' : ''}">${reference}</td>
+                <td class="${published === '-' ? 'center-dash' : ''}">${published}</td>
             </tr>
         `;
         $tbody.append(rowHTML);
@@ -482,7 +622,7 @@ function updateCount() {
 // ฟังก์ชัน Export ไปยัง Excel - Export เฉพาะข้อมูลที่แสดงในตาราง (filteredData)
 function exportTableToExcel() {
     if (filteredData.length === 0) {
-        showNotification('ไม่มีข้อมูลสำหรับ Export', 'warning');
+        alert('ไม่มีข้อมูลสำหรับ Export');
         return;
     }
 
@@ -504,6 +644,10 @@ function exportTableToExcel() {
             yearIndex = 0;
         }
         
+        // Published - แปลงเป็น mm-yyyy
+        const publishedRaw = columns[14] || '-';
+        const published = formatDateToMonthYear(publishedRaw);
+        
         return {
             'ประเภทของปี': yearType,
             'ปี': columns[yearIndex] || '-',
@@ -512,7 +656,8 @@ function exportTableToExcel() {
             'ชื่อผลงาน (ไทย)': columns[7] || '-',
             'ชื่อผลงาน (Eng)': columns[8] || '-',
             'ระดับผลงาน': columns[5] || '-',
-            'อ้างอิง': columns[10] || '-'
+            'อ้างอิง': columns[10] || '-',
+            'Published': published
         };
     });
     
@@ -521,14 +666,15 @@ function exportTableToExcel() {
     
     // ตั้งค่าความกว้างคอลัมน์
     ws['!cols'] = [
-        { wch: 15 }, // ประเภทของปี
+        { wch: 10 }, // ประเภทของปี
         { wch: 10 }, // ปี
         { wch: 30 }, // ชื่อผู้ผลิตผลงาน
         { wch: 25 }, // สังกัดภาควิชา
         { wch: 50 }, // ชื่อผลงาน (ไทย)
         { wch: 50 }, // ชื่อผลงาน (Eng)
-        { wch: 35 }, // ระดับผลงาน
-        { wch: 50 }  // อ้างอิง
+        { wch: 15 }, // ระดับผลงาน
+        { wch: 50 }, // อ้างอิง
+        { wch: 10 }  // Published (mm-yyyy)
     ];
     
     XLSX.utils.book_append_sheet(wb, ws, 'ผลงานตีพิมพ์');
