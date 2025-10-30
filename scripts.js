@@ -26,8 +26,9 @@ function formatDateToMonthYear(dateValue) {
         
         // ถ้าเป็นตัวเลข (Excel date serial number)
         if (typeof dateValue === 'number') {
-            // แปลง Excel serial number เป็น Date
-            date = new Date((dateValue - 25569) * 86400 * 1000);
+            // แปลง Excel serial number เป็น Date และบวก offset timezone ไทย (UTC+7)
+            const utcDate = new Date((dateValue - 25569) * 86400 * 1000);
+            date = new Date(utcDate.getTime() + (7 * 60 * 60 * 1000)); // บวก 7 ชั่วโมง
         } else {
             // ถ้าเป็น string ให้แปลงเป็น Date
             date = new Date(dateValue);
@@ -65,9 +66,9 @@ function formatDateToMonthYear(dateValue) {
             return dateValue.toString();
         }
         
-        // แปลงเป็น mm-yyyy (พ.ศ.)
-        const month = String(date.getMonth() + 1).padStart(2, '0');
-        const year = date.getFullYear() + 543; // แปลงเป็น พ.ศ.
+        // แปลงเป็น mm-yyyy (พ.ศ.) - ใช้ UTC หลังจากบวก offset แล้ว
+        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+        const year = date.getUTCFullYear() + 543; // แปลงเป็น พ.ศ.
         
         return `${month}-${year}`;
     } catch (error) {
