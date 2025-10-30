@@ -8,7 +8,7 @@ function normalizeText(text) {
     return text.toString().replace(/\s+/g, '').toLowerCase();
 }
 
-// ฟังก์ชันแปลงวันที่เป็น mm-yyyy (พ.ศ.)
+// ฟังก์ชันแปลงวันที่เป็น mm-yyyy (พ.ศ.) หรือแค่ yyyy ถ้าไม่มีเดือน
 function formatDateToMonthYear(dateValue) {
     if (!dateValue || dateValue === '-' || dateValue === '') return '-';
     
@@ -37,6 +37,13 @@ function formatDateToMonthYear(dateValue) {
         // ตรวจสอบว่า date ถูกต้องหรือไม่
         if (isNaN(date.getTime())) {
             // ถ้าแปลงไม่ได้ ให้ลองดึงเดือนและปีจาก string โดยตรง
+            
+            // ตรวจสอบว่าเป็นแค่ปี (4 หลัก) หรือไม่
+            const yearOnlyMatch = str.match(/^\s*(\d{4})\s*$/);
+            if (yearOnlyMatch) {
+                const year = parseInt(yearOnlyMatch[1]) + 543; // แปลงเป็น พ.ศ.
+                return `${year}`;
+            }
             
             // ลองหารูปแบบต่างๆ เช่น "12/2024", "2024-12", "Dec 2024" ฯลฯ
             const patterns = [
