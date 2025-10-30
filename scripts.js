@@ -320,8 +320,8 @@ function loadData(isRefresh = false) {
             } catch (error) {
                 console.error('Error parsing data:', error);
                 console.error('Error stack:', error.stack);
-                alert('เกิดข้อผิดพลาดในการแปลงข้อมูล\n\n' + error.message);
-                $('#dataTable tbody').html('<tr><td colspan="9" class="no-data">เกิดข้อผิดพลาดในการแปลงข้อมูล<br>' + error.message + '</td></tr>');
+                alert('Error parsing data\n\n' + error.message);
+                $('#dataTable tbody').html('<tr><td colspan="9" class="no-data">Error parsing data<br>' + error.message + '</td></tr>');
                 $('.btn.refresh i').removeClass('loading');
             }
         },
@@ -332,14 +332,10 @@ function loadData(isRefresh = false) {
             console.error('XHR Status:', xhr.status);
             console.error('XHR Response:', xhr.responseText);
             
-            let errorMsg = 'ไม่สามารถโหลดข้อมูลได้\n\n';
-            errorMsg += 'กรุณาตรวจสอบ:\n';
-            errorMsg += '1. Google Sheets ต้องแชร์เป็น "Anyone with the link"\n';
-            errorMsg += '2. ชื่อ Sheet (แท็บ) ต้องถูกต้อง: "' + SHEET_NAME + '"\n';
-            errorMsg += '3. SHEET_ID ต้องถูกต้อง: ' + SHEET_ID + '\n\n';
-            errorMsg += 'รายละเอียดข้อผิดพลาด:\n';
-            errorMsg += 'Status: ' + status + '\n';
-            errorMsg += 'Error: ' + error;
+            let errorMsg = 'Unable to load data\n\n';
+            errorMsg += 'Please check:\n';
+            errorMsg += '1. Your internet connection\n';
+            errorMsg += '2. Unable to display data from spreadsheet';
             
             alert(errorMsg);
             $('.btn.refresh i').removeClass('loading');

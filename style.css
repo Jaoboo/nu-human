@@ -31,18 +31,18 @@ body {
 .header { 
     display: flex; 
     align-items: center; 
-    gap: 20px; 
+    gap: 35px; 
     margin-bottom: 20px; 
     padding-bottom: 15px;
 }
 
 .header .logo img { 
-    width: 120px; 
+    width: 100px; 
     height: auto; 
 }
 
 .header h1 { 
-    font-size: 28px; 
+    font-size: 42px; 
     color: #424242; 
     font-weight: 600;
 }
@@ -88,8 +88,7 @@ body {
 select { 
     padding: 10px 12px; 
     border-radius: 8px; 
-    border: 1px solid #ddd !important;
-    border-bottom: 2px solid #999 !important; /* เพิ่มขอบล่างชัดเจน */
+    border: 2px solid #ddd !important;
     font-size: 14px;
     transition: all 0.3s ease;
     background: white;
@@ -100,7 +99,6 @@ select {
 select:focus { 
     outline: none;
     border-color: var(--orange) !important;
-    border-bottom-color: var(--orange) !important; /* ขอบล่างตอน focus */
     box-shadow: 0 0 0 3px rgba(255, 111, 0, 0.1);
 }
 
@@ -108,7 +106,6 @@ select:focus {
 .filters input:hover,
 select:hover { 
     border-color: #bbb !important;
-    border-bottom-color: #666 !important; /* ขอบล่างตอน hover */
 }
 
 /* เพิ่มขอบให้ dropdown options */
