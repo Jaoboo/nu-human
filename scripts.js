@@ -20,7 +20,10 @@ function formatDateToMonthYear(dateValue) {
         const dateMatch = str.match(/Date\((\d{4}),(\d{1,2}),(\d{1,2})\)/);
         if (dateMatch) {
             const year = parseInt(dateMatch[1]) + 543; // แปลงเป็น พ.ศ.
-            const month = (parseInt(dateMatch[2]) + 1).toString().padStart(2, '0'); // บวก 1 เพราะ Google Sheets ส่งมาเป็น 0-indexed
+            let monthNum = parseInt(dateMatch[2]) + 1; // บวก 1 เพราะ Google Sheets ส่งมาเป็น 0-indexed
+            // ถ้าบวกแล้วได้ 13 ให้เป็น 1
+            if (monthNum === 13) monthNum = 1;
+            const month = monthNum.toString().padStart(2, '0');
             return `${month}-${year}`;
         }
         
