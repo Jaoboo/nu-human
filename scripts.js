@@ -21,8 +21,6 @@ function formatDateToMonthYear(dateValue) {
         if (dateMatch) {
             const year = parseInt(dateMatch[1]) + 543; // แปลงเป็น พ.ศ.
             let monthNum = parseInt(dateMatch[2]) + 1; // บวก 1 เพราะ Google Sheets ส่งมาเป็น 0-indexed
-            // ถ้าบวกแล้วได้ 13 ให้เป็น 1
-            if (monthNum === 13) monthNum = 1;
             const month = monthNum.toString().padStart(2, '0');
             return `${month}-${year}`;
         }
