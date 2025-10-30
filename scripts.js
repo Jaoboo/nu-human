@@ -8,20 +8,54 @@ function normalizeText(text) {
     return text.toString().replace(/\s+/g, '').toLowerCase();
 }
 
-// ฟังก์ชันแปลงวันที่เป็น mm-yyyy (พ.ศ.) หรือแค่ yyyy ถ้าไม่มีเดือน
+function getYearValue(val) {
+    if (val === null || val === undefined || val === '') return '-';
+    
+    // แสดงค่าตามที่มีเลย
+    return val.toString().trim();
+}
+
+// ฟังก์ชันแปลงวันที่เป็น mm-yyyy (พ.ศ.) - เฉพาะช่อง Published เท่านั้น
 function formatDateToMonthYear(dateValue) {
     if (!dateValue || dateValue === '-' || dateValue === '') return '-';
     
     try {
         let date;
-        const str = dateValue.toString();
+        const str = dateValue.toString().trim();
         
         // ตรวจสอบรูปแบบ Date(yyyy,m,d) จาก Google Sheets
         const dateMatch = str.match(/Date\((\d{4}),(\d{1,2}),(\d{1,2})\)/);
         if (dateMatch) {
             const year = parseInt(dateMatch[1]) + 543; // แปลงเป็น พ.ศ.
-            const month = (parseInt(dateMatch[2]) + 1).toString().padStart(2, '0'); // บวก 1 เพราะ Google Sheets ส่งมาเป็น 0-indexed
+            let monthNum = parseInt(dateMatch[2]) + 1; // บวก 1 เพราะ Google Sheets ส่งมาเป็น 0-indexed
+            // ถ้าบวกแล้วได้ 13 ให้เป็น 1
+            if (monthNum === 13) monthNum = 1;
+            const month = monthNum.toString().padStart(2, '0');
             return `${month}-${year}`;
+        }
+        
+        // ลองหารูปแบบ mm/yyyy, yyyy-mm, mm-yyyy
+        const patterns = [
+            /(\d{1,2})\/(\d{4})/,           // mm/yyyy หรือ m/yyyy
+            /(\d{4})-(\d{1,2})/,            // yyyy-mm
+            /(\d{1,2})-(\d{4})/,            // mm-yyyy
+        ];
+        
+        for (const pattern of patterns) {
+            const match = str.match(pattern);
+            if (match) {
+                let month, year;
+                if (pattern.source.startsWith('(\\d{4})')) {
+                    // yyyy-mm format
+                    year = parseInt(match[1]) + 543; // แปลงเป็น พ.ศ.
+                    month = match[2].padStart(2, '0');
+                } else {
+                    // mm/yyyy or mm-yyyy format
+                    month = match[1].padStart(2, '0');
+                    year = parseInt(match[2]) + 543; // แปลงเป็น พ.ศ.
+                }
+                return `${month}-${year}`;
+            }
         }
         
         // ถ้าเป็นตัวเลข (Excel date serial number)
@@ -29,55 +63,21 @@ function formatDateToMonthYear(dateValue) {
             // แปลง Excel serial number เป็น Date และบวก offset timezone ไทย (UTC+7)
             const utcDate = new Date((dateValue - 25569) * 86400 * 1000);
             date = new Date(utcDate.getTime() + (7 * 60 * 60 * 1000)); // บวก 7 ชั่วโมง
-        } else {
-            // ถ้าเป็น string ให้แปลงเป็น Date
-            date = new Date(dateValue);
-        }
-        
-        // ตรวจสอบว่า date ถูกต้องหรือไม่
-        if (isNaN(date.getTime())) {
-            // ถ้าแปลงไม่ได้ ให้ลองดึงเดือนและปีจาก string โดยตรง
             
-            // ตรวจสอบว่าเป็นแค่ปี (4 หลัก) หรือไม่
-            const yearOnlyMatch = str.match(/^\s*(\d{4})\s*$/);
-            if (yearOnlyMatch) {
-                const year = parseInt(yearOnlyMatch[1]) + 543; // แปลงเป็น พ.ศ.
-                return `${year}`;
+            // ตรวจสอบว่า date ถูกต้องหรือไม่
+            if (isNaN(date.getTime())) {
+                return dateValue.toString();
             }
             
-            // ลองหารูปแบบต่างๆ เช่น "12/2024", "2024-12", "Dec 2024" ฯลฯ
-            const patterns = [
-                /(\d{1,2})\/(\d{4})/,           // mm/yyyy หรือ m/yyyy
-                /(\d{4})-(\d{1,2})/,            // yyyy-mm
-                /(\d{1,2})-(\d{4})/,            // mm-yyyy
-            ];
-            
-            for (const pattern of patterns) {
-                const match = str.match(pattern);
-                if (match) {
-                    let month, year;
-                    if (pattern.source.startsWith('(\\d{4})')) {
-                        // yyyy-mm format
-                        year = parseInt(match[1]) + 543; // แปลงเป็น พ.ศ.
-                        month = match[2].padStart(2, '0');
-                    } else {
-                        // mm/yyyy or mm-yyyy format
-                        month = match[1].padStart(2, '0');
-                        year = parseInt(match[2]) + 543; // แปลงเป็น พ.ศ.
-                    }
-                    return `${month}-${year}`;
-                }
-            }
-            
-            // ถ้าไม่ match pattern ใดเลย ให้คืนค่าเดิม
-            return dateValue.toString();
+            // แปลงเป็น mm-yyyy (พ.ศ.)
+            const month = String(date.getUTCMonth() + 1).padStart(2, '0');
+            const year = date.getUTCFullYear() + 543;
+            return `${month}-${year}`;
         }
         
-        // แปลงเป็น mm-yyyy (พ.ศ.) - ใช้ UTC หลังจากบวก offset แล้ว
-        const month = String(date.getUTCMonth() + 1).padStart(2, '0');
-        const year = date.getUTCFullYear() + 543; // แปลงเป็น พ.ศ.
+        // ถ้าไม่ match pattern ใดเลย ให้คืนค่าเดิม (กรณีเป็นปีอย่างเดียวหรือข้อความอื่นๆ)
+        return str;
         
-        return `${month}-${year}`;
     } catch (error) {
         console.error('Error formatting date:', dateValue, error);
         return dateValue.toString();
@@ -543,7 +543,7 @@ function filterData() {
     updateCount();
 }
 
-// ฟังก์ชันแสดงข้อมูลในตาราง
+// เพิ่ม debug ในฟังก์ชัน displayData
 function displayData(data) {
     const $tbody = $('#dataTable tbody');
     $tbody.empty();
@@ -553,26 +553,26 @@ function displayData(data) {
         return;
     }
 
-    // ดึงค่าประเภทปีที่เลือก
     const yearType = $('#typeFilter').val().trim() || 'ปีการศึกษา';
 
     data.forEach((row, index) => {
-        // Debug: แสดงข้อมูล 3 แถวแรก
-        if (index < 3) {
-            console.log(`Row ${index} data:`, row);
-            console.log('All values:', Object.values(row));
+        const columns = Object.values(row);
+        
+        // Debug: แสดงข้อมูลทุกคอลัมน์ของแถวแรก
+        if (index === 0) {
+            console.log('=== DEBUG ROW 0 ===');
+            console.log('Total columns:', columns.length);
+            columns.forEach((col, i) => {
+                console.log(`Column ${i}:`, col, `(Type: ${typeof col})`);
+            });
         }
         
-        // ฟังก์ชันตรวจสอบและแสดงค่า - ถ้าว่างให้ใส่ "-"
         const getValue = (val) => {
             if (val === null || val === undefined || val === '') return '-';
             const strVal = val.toString().trim();
             return strVal === '' ? '-' : strVal;
         };
 
-        const columns = Object.values(row);
-
-        // ดึงค่าปีตามประเภทที่เลือก
         let yearValue = '-';
         let yearIndex = 2; // default ปีการศึกษา
 
@@ -584,34 +584,28 @@ function displayData(data) {
             yearIndex = 0;
         }
 
-        yearValue = getValue(columns[yearIndex]);
+        // Debug: ดูค่าที่ดึงมา
+        if (index === 0) {
+            console.log(`Year Type: ${yearType}`);
+            console.log(`Year Index: ${yearIndex}`);
+            console.log(`Raw Year Value:`, columns[yearIndex]);
+            console.log(`After getYearValue:`, getYearValue(columns[yearIndex]));
+        }
+
+        yearValue = getYearValue(columns[yearIndex]);
         
-        // ชื่อผู้ผลิตผลงาน
         let author = getValue(columns[3]);
-        // แทนที่ , ด้วย ,<br> เพื่อขึ้นบรรทัดใหม่
         if (author !== '-') {
             author = author.replace(/,\s*/g, ',<br>');
         }
         
-        // สังกัดภาควิชา
         const department = getValue(columns[4]);
-        
-        // ชื่อผลงานภาษาไทย
         const titleThai = getValue(columns[7]);
-        
-        // ชื่อผลงานภาษาอังกฤษ
         const titleEng = getValue(columns[8]);
-        
-        // ระดับผลงาน
         const level = getValue(columns[5]);
-        
-        // อ้างอิง
         const reference = getValue(columns[10]);
-
-        // Published - แปลงเป็น mm-yyyy
         const publishedRaw = getValue(columns[14]);
         const published = formatDateToMonthYear(publishedRaw);
-        
 
         const rowHTML = `
             <tr>
@@ -652,7 +646,7 @@ function exportTableToExcel() {
     const exportData = filteredData.map(row => {
         const columns = Object.values(row);
         
-        // ดึงค่าปีตามประเภทที่เลือก
+        // ดึงค่าปีตามประเภทที่เลือก - ใช้ getYearValue
         let yearIndex = 2; // default ปีการศึกษา
         if(yearType === "ปีปฏิทิน") {
             yearIndex = 1;
@@ -660,13 +654,15 @@ function exportTableToExcel() {
             yearIndex = 0;
         }
         
+        const yearValue = getYearValue(columns[yearIndex]); // ใช้ getYearValue แทน
+        
         // Published - แปลงเป็น mm-yyyy
         const publishedRaw = columns[14] || '-';
         const published = formatDateToMonthYear(publishedRaw);
         
         return {
             'ประเภทของปี': yearType,
-            'ปี': columns[yearIndex] || '-',
+            'ปี': yearValue,
             'ชื่อผู้ผลิตผลงาน': columns[3] || '-',
             'สังกัดภาควิชา': columns[4] || '-',
             'ชื่อผลงาน (ไทย)': columns[7] || '-',
