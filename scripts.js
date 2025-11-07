@@ -384,6 +384,7 @@ function populateDropdownOptions() {
         if (rankValue != null && rankValue.toString().trim() !== '') {
             ranks.add(rankValue.toString().trim());
         }
+
     });
 
     // ============================================
@@ -601,7 +602,9 @@ function displayData(data) {
         const level = getValue(columns[5]);
         const reference = getValue(columns[10]);
         const publishedRaw = getValue(columns[14]);
+        const publisher = getValue(columns[9]);
         const published = formatDateToMonthYear(publishedRaw);
+        
 
         const rowHTML = `
             <tr>
@@ -613,7 +616,9 @@ function displayData(data) {
                 <td>${titleEng}</td>
                 <td class="${level === '-' ? 'center-dash' : ''}">${level}</td>
                 <td class="${reference === '-' ? 'center-dash' : ''}">${reference}</td>
+                <td class="${publisher === '-' ? 'center-dash' : ''}">${publisher}</td>
                 <td class="${published === '-' ? 'center-dash' : ''}">${published}</td>
+                
             </tr>
         `;
         $tbody.append(rowHTML);
@@ -657,7 +662,7 @@ function exportTableToExcel() {
         const published = formatDateToMonthYear(publishedRaw);
         
         return {
-            'ประเภทของปี': yearType,
+            'ประเภทปี': yearType,
             'ปี': yearValue,
             'ชื่อผู้ผลิตผลงาน': columns[3] || '-',
             'สังกัดภาควิชา': columns[4] || '-',
@@ -665,6 +670,7 @@ function exportTableToExcel() {
             'ชื่อผลงาน (Eng)': columns[8] || '-',
             'ระดับผลงาน': columns[5] || '-',
             'อ้างอิง': columns[10] || '-',
+            'Publisher': columns[9] || '-',
             'Published': published
         };
     });
@@ -682,6 +688,7 @@ function exportTableToExcel() {
         { wch: 50 }, // ชื่อผลงาน (Eng)
         { wch: 15 }, // ระดับผลงาน
         { wch: 50 }, // อ้างอิง
+        { wch: 30 }, // Publisher
         { wch: 10 }  // Published (mm-yyyy)
     ];
     

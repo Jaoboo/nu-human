@@ -272,7 +272,7 @@ table td:nth-child(1) {
 
 table th:nth-child(2),
 table td:nth-child(2) { 
-    width: 3%; /* ปี (พ.ศ.) */
+    width: 4%; /* ปี (พ.ศ.) */
 }
 
 table th:nth-child(3),
@@ -287,17 +287,17 @@ table td:nth-child(4) {
 
 table th:nth-child(5),
 table td:nth-child(5) { 
-    width: 15%; /* ชื่อผลงาน (ไทย) - เพิ่ม */
+    width: 13%; /* ชื่อผลงาน (ไทย) - เพิ่ม */
 }
 
 table th:nth-child(6),
 table td:nth-child(6) { 
-    width: 15%; /* ชื่อผลงาน (Eng) - เพิ่ม */
+    width: 13%; /* ชื่อผลงาน (Eng) - เพิ่ม */
 }
 
 table th:nth-child(7),
 table td:nth-child(7) { 
-    width: 5%; /* ระดับผลงาน */
+    width: 4%; /* ระดับผลงาน */
 }
 
 table th:nth-child(8),
@@ -307,6 +307,11 @@ table td:nth-child(8) {
 
 table th:nth-child(9),
 table td:nth-child(9) { 
+    width: 12%; /* Publisher */
+}
+
+table th:nth-child(10),
+table td:nth-child(10) { 
     width: 3%; /* Published (mm-yyyy) - ลด */
 }
 
@@ -370,8 +375,8 @@ td:nth-child(9) {
 /* Left align for text-heavy columns */
 /* ชื่อผู้ผลิตผลงาน, สังกัดภาควิชา, ชื่อผลงาน (ไทย/Eng), อ้างอิง */
 td:nth-child(8) { 
-    text-align: left; 
-    vertical-align: top;
+    text-align: center !important;
+    vertical-align: middle !important;
 }
 
 /* Center align for cells containing only "-" */
