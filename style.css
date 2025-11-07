@@ -257,6 +257,35 @@ select:hover {
     font-size: 14px;
 }
 
+/* Notice Card Between Filter and Table */
+.notice-card {
+    background: #fff;
+    border: 2px solid #ff9800;
+    border-radius: 12px;
+    padding: 20px 25px;
+    margin-bottom: 20px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+}
+
+.notice-card p {
+    margin: 0;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #424242;
+}
+
+.notice-card p strong {
+    color: #e65100;
+    font-weight: 600;
+}
+
+.notice-card .notice-small {
+    font-size: 13px;
+    margin-top: 10px;
+    font-style: italic;
+    color: #666;
+}
+
 /* Table */
 .table-header-section {
     display: flex;
@@ -451,7 +480,7 @@ td:nth-child(9) {
 
 td:nth-child(10) { 
     text-align: center; 
-    vertical-align: middle;
+    vertical-align: top;
 }
 
 /* Left align for text-heavy columns */
@@ -526,6 +555,18 @@ tbody tr:hover {
         gap: 10px;
         align-items: flex-start;
     }
+    
+    .notice-card {
+        padding: 15px 20px;
+    }
+    
+    .notice-card p {
+        font-size: 13px;
+    }
+    
+    .notice-card .notice-small {
+        font-size: 12px;
+    }
 }
 
 @media (max-width: 600px) { 
@@ -562,6 +603,18 @@ tbody tr:hover {
         margin-left: 0;
         width: 100%;
         text-align: center;
+    }
+    
+    .notice-card {
+        padding: 12px 15px;
+    }
+    
+    .notice-card p {
+        font-size: 12px;
+    }
+    
+    .notice-card .notice-small {
+        font-size: 11px;
     }
 }
 
