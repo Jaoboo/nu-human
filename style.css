@@ -267,17 +267,17 @@ table {
 /* Column widths - ใช้ % ให้ยืดหยุ่นกับหน้าจอ */
 table th:nth-child(1),
 table td:nth-child(1) { 
-    width: 8%; /* ประเภทของปี */
+    width: 5%; /* ประเภทของปี */
 }
 
 table th:nth-child(2),
 table td:nth-child(2) { 
-    width: 5%; /* ปี (พ.ศ.) */
+    width: 3%; /* ปี (พ.ศ.) */
 }
 
 table th:nth-child(3),
 table td:nth-child(3) { 
-    width: 15%; /* ชื่อผู้ผลิตผลงาน */
+    width: 10%; /* ชื่อผู้ผลิตผลงาน */
 }
 
 table th:nth-child(4),
