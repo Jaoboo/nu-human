@@ -227,7 +227,7 @@ select:hover {
 
 /* Reset Button */
 .controls-row .btn.reset { 
-    background: #6b6f73; 
+    background: #d1d1d1; 
     color: white; 
 }
 
