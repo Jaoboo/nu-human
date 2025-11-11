@@ -117,7 +117,7 @@ const SHEET_NAME = 'web app(อยู่ระหว่างจัดทำ)';
 function getURLParameters() {
     const params = new URLSearchParams(window.location.search);
     return {
-        type: params.get('type') || 'ปีการศึกษา',
+        type: params.get('type') || 'ปีปฏิทิน',
         year: params.get('year') || '',
         dept: params.get('dept') || '',
         rank: params.get('rank') || '',
@@ -138,7 +138,7 @@ function updateURLParameters() {
     const keyword = $('#keyword').val();
     
     // เพิ่มเฉพาะค่าที่ไม่ว่าง
-    if (type && type !== 'ปีการศึกษา') params.set('type', type);
+    if (type && type !== 'ปีปฏิทิน') params.set('type', type);
     if (year) params.set('year', year);
     if (dept) params.set('dept', dept);
     if (rank) params.set('rank', rank);
@@ -183,7 +183,7 @@ $(document).ready(function() {
     // ปุ่ม Reset
     $('.btn.reset').click(function() {
         // ล้างค่า filters
-        $('#typeFilter').val('ปีการศึกษา');
+        $('#typeFilter').val('ปีปฏิทิน');
         $('#yearFilter').val('');
         $('#deptFilter').val('');
         $('#rankFilter').val('');
@@ -349,7 +349,7 @@ function populateDropdownOptions() {
     const ranks = new Set();
     
     // ดึงประเภทปีที่เลือก
-    const yearType = $('#typeFilter').val().trim() || 'ปีการศึกษา';
+    const yearType = $('#typeFilter').val().trim() || 'ปีปฏิทิน';
     
     allData.forEach((row, index) => {
         const columns = Object.values(row);
@@ -471,7 +471,7 @@ function populateDropdownOptions() {
 
 // ฟังก์ชันกรองข้อมูล
 function filterData() {
-    const yearType = $('#typeFilter').val().trim() || 'ปีการศึกษา';
+    const yearType = $('#typeFilter').val().trim() || 'ปีปฏิทิน';
     const year = $('#yearFilter').val().trim();
     const dept = $('#deptFilter').val().trim();
     const rank = $('#rankFilter').val().trim();
@@ -550,7 +550,7 @@ function displayData(data) {
         return;
     }
 
-    const yearType = $('#typeFilter').val().trim() || 'ปีการศึกษา';
+    const yearType = $('#typeFilter').val().trim() || 'ปีปฏิทิน';
 
     data.forEach((row, index) => {
         const columns = Object.values(row);
@@ -641,7 +641,7 @@ function exportTableToExcel() {
     const wb = XLSX.utils.book_new();
     
     // ดึงค่าประเภทปีที่เลือก
-    const yearType = $('#typeFilter').val().trim() || 'ปีการศึกษา';
+    const yearType = $('#typeFilter').val().trim() || 'ปีปฏิทิน';
     
     // สร้างข้อมูลสำหรับ export
     const exportData = filteredData.map(row => {
