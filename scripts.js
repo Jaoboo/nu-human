@@ -493,12 +493,12 @@ function filterData() {
         
         // ปี - เลือก index ตามประเภทปี
         if (year) {
-            let yearIndex = 2; // default ปีการศึกษา
+            let yearIndex = 1; // default ปีปฏิทิน
             
-            if(yearType === "ปีการศึกษา") {
-                yearIndex = 2;
-            } else if(yearType === "ปีปฏิทิน") {
+            if(yearType === "ปีปฏิทิน") {
                 yearIndex = 1;
+            } else if(yearType === "ปีการศึกษา") {
+                yearIndex = 2;
             } else if(yearType === "ปีงบประมาณ") {
                 yearIndex = 0;
             }
@@ -571,12 +571,12 @@ function displayData(data) {
         };
 
         let yearValue = '-';
-        let yearIndex = 2; // default ปีการศึกษา
+        let yearIndex = 1; // default ปีปฏิทิน
 
-        if(yearType === "ปีการศึกษา") {
-            yearIndex = 2;
-        } else if(yearType === "ปีปฏิทิน") {
+        if(yearType === "ปีปฏิทิน") {
             yearIndex = 1;
+        } else if(yearType === "ปีการศึกษา") {
+            yearIndex = 2;
         } else if(yearType === "ปีงบประมาณ") {
             yearIndex = 0;
         }
@@ -648,9 +648,9 @@ function exportTableToExcel() {
         const columns = Object.values(row);
         
         // ดึงค่าปีตามประเภทที่เลือก - ใช้ getYearValue
-        let yearIndex = 2; // default ปีการศึกษา
-        if(yearType === "ปีปฏิทิน") {
-            yearIndex = 1;
+        let yearIndex = 1; // default ปีปฏิทิน
+        if(yearType === "ปีการศึกษา") {
+            yearIndex = 2;
         } else if(yearType === "ปีงบประมาณ") {
             yearIndex = 0;
         }
