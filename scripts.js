@@ -205,6 +205,7 @@ $(document).ready(function() {
         $icon.addClass('loading');
         
         // โหลดข้อมูลใหม่
+        
         loadData(true);
     });
 
@@ -252,7 +253,7 @@ function loadData(isRefresh = false) {
     
     if (!SHEET_ID || SHEET_ID === '') {
         alert('กรุณาใส่ SHEET_ID ในไฟล์ script.js');
-        $('#dataTable tbody').html('<tr><td colspan="9" class="no-data">กรุณาใส่ SHEET_ID</td></tr>');
+        $('#dataTable tbody').html('<tr><td colspan="10" class="no-data">กรุณาใส่ SHEET_ID</td></tr>');
         return;
     }
     
@@ -260,8 +261,8 @@ function loadData(isRefresh = false) {
     const timestamp = isRefresh ? '&_=' + new Date().getTime() : '';
     const url = `https://docs.google.com/spreadsheets/d/${SHEET_ID}/gviz/tq?tqx=out:json&sheet=${encodeURIComponent(SHEET_NAME)}${timestamp}`;
     
-    // แสดง Loading
-    $('#dataTable tbody').html('<tr><td colspan="9" style="text-align:center; padding:20px;">⏳ กำลังโหลดข้อมูล...</td></tr>');
+    // แสดง Loading - เปลี่ยนเป็น colspan="10"
+    $('#dataTable tbody').html('<tr><td colspan="10" style="text-align:center; padding:20px;">⏳ กำลังโหลดข้อมูล...</td></tr>');
     
     $.ajax({
         url: url,
@@ -321,7 +322,7 @@ function loadData(isRefresh = false) {
                 console.error('Error parsing data:', error);
                 console.error('Error stack:', error.stack);
                 alert('Error parsing data\n\n' + error.message);
-                $('#dataTable tbody').html('<tr><td colspan="9" class="no-data">Error parsing data<br>' + error.message + '</td></tr>');
+                $('#dataTable tbody').html('<tr><td colspan="10" class="no-data">Error parsing data<br>' + error.message + '</td></tr>');
                 $('.btn.refresh i').removeClass('loading');
             }
         },
@@ -546,7 +547,7 @@ function displayData(data) {
     $tbody.empty();
 
     if (data.length === 0) {
-        $tbody.html('<tr><td colspan="9" class="no-data">ไม่พบข้อมูล</td></tr>');
+        $tbody.html('<tr><td colspan="10" class="no-data">ไม่พบข้อมูล</td></tr>');
         return;
     }
 

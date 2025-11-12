@@ -303,35 +303,24 @@ select:hover {
     flex: 1;
 }
 
-/* Refresh Button - Updated to match Excel button size */
-.table-header-section .btn.refresh {
-    background: var(--orange);
+
+/* Refresh Button - Match Reset and Excel button size */
+.controls-row .btn.refresh {
+    background: #e57519b5;
     color: white;
-    padding: 10px 24px;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-    font-weight: 600;
-    font-size: 14px;
-    transition: all 0.3s ease;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-    min-width: 100px;
 }
 
-.table-header-section .btn.refresh:hover {
+.controls-row .btn.refresh:hover {
     background: #e57419;
     transform: translateY(-2px);
     box-shadow: 0 4px 8px rgba(0,0,0,0.15);
 }
 
-.table-header-section .btn.refresh:active {
+.controls-row .btn.refresh:active {
     transform: translateY(0);
 }
 
-.table-header-section .btn.refresh i {
+.controls-row .btn.refresh i {
     font-size: 14px;
 }
 

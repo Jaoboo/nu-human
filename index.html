@@ -85,6 +85,7 @@
 
             <div class="controls-row">
                 <button class="btn reset">ล้างข้อมูล</button>
+                <button class="btn refresh">อัพเดทข้อมูล</button>
                 <div class="result-count">ผลลัพธ์: <span id="count">0</span> แถว</div>
             </div>
         </section>
@@ -96,36 +97,32 @@
         </section>
 
         <!-- Table Section -->
-        <section class="card table-card">
-            <div class="table-header-section">
-                <h2>ตารางข้อมูลผลงาน</h2>
-                <button class="btn refresh"><i class="fa fa-refresh" aria-hidden="true"></i></button>
-                <button class="btn excel-table"><i class="fa fa-file-excel" aria-hidden="true"></i> Excel</button>
-            </div>
-            <div class="table-wrap">
-                <table id="dataTable">
-                    <thead>
-                        <tr>
-                            <th rowspan="2">ประเภทปี</th>
-                            <th rowspan="2">ปี</th>
-                            <th rowspan="2">ชื่อผู้ผลิตผลงาน<br>(เฉพาะบุคลากรคณะมนุษยศาสตร์)</th>
-                            <th rowspan="2">สังกัดภาควิชา</th>
-                            <th colspan="2">ชื่อผลงาน</th>
-                            <th rowspan="2">ระดับผลงาน</th>
-                            <th rowspan="2">อ้างอิง</th>
-                            <th rowspan="2">Publisher</th>
-                            <th rowspan="2">Published</th>
-                        </tr>
-                        <tr>
-                            <th>ภาษาไทย</th>
-                            <th>ภาษาอังกฤษ</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr>
-                            <td colspan="8" class="no-data">กำลังโหลดข้อมูล...</td>
-                        </tr>
-                    </tbody>
+        <!-- Table Section -->
+            <section class="card table-card">
+                <div class="table-header-section">
+                    <h2>ตารางข้อมูลผลงาน</h2>
+                    <button class="btn excel-table"><i class="fa fa-file-excel" aria-hidden="true"></i> Excel</button>
+                </div>
+                <div class="table-wrap">
+                    <table id="dataTable">
+            <thead>
+                <tr>
+                    <th rowspan="2">ประเภทปี</th>
+                    <th rowspan="2">ปี</th>
+                    <th rowspan="2">ชื่อผู้ผลิตผลงาน<br>(เฉพาะบุคลากรคณะมนุษยศาสตร์)</th>
+                    <th rowspan="2">สังกัดภาควิชา</th>
+                    <th colspan="2">ชื่อผลงาน</th>
+                    <th rowspan="2">ระดับผลงาน</th>
+                    <th rowspan="2">อ้างอิง</th>
+                    <th rowspan="2">Publisher</th>
+                    <th rowspan="2">Published</th>
+                </tr>
+                <tr>
+                    <th>ภาษาไทย</th>
+                    <th>ภาษาอังกฤษ</th>
+                </tr>
+            </thead>
+            <tbody>
                 </table>
             </div>
         </section>
